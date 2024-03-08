@@ -176,7 +176,7 @@
         android:layout_height="60dp"
         android:layout_gravity="bottom"
         app:backgroundTint="@color/white"
-        app:fabCradIeRoundedCornerRadius="50dp"
+        app:fabCradleRoundedCornerRadius="50dp"
         app:fabCradleMargin="8dp"
         app:fabCradleVerticalOffset="6dp">
         <LinearLayout
@@ -266,5 +266,4 @@
             app:maxImageSize="30dp"
             app:tint="@color/white"
             android:src="@drawable/float_icon"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>

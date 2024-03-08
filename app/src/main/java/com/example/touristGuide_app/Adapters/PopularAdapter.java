@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
-import com.example.cachecompass_tracker_app.R;
+import com.example.touristGuide_app.R;
 import com.example.touristGuide_app.Domains.PopularDomain;
 
 import java.text.DecimalFormat;

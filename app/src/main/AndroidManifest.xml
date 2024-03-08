@@ -21,16 +21,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.CacheCompass_Tracker_App"
+        android:theme="@style/Theme.touristGuide_app"
         tools:targetApi="31">
         <activity
-            android:name=".MainRoom"
+            android:name="com.example.touristGuide_app.Activities.Begin"
             android:exported="false" />
         <activity
-            android:name=".SignUpActivity"
+            android:name="com.example.touristGuide_app.Activities.Login"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.touristGuide_app.Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

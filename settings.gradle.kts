@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CacheCompass_Tracker_App"
+rootProject.name = "touristGuide_app"
 include(":app")
  

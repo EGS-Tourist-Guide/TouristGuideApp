@@ -7,7 +7,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.cachecompass_tracker_app.R;
+import com.example.touristGuide_app.R;
 
 public class Begin extends AppCompatActivity {
 

@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.cachecompass_tracker_app.R;
+import com.example.touristGuide_app.R;
 import com.example.touristGuide_app.Domains.CategoryDomain;
 
 import java.util.ArrayList;

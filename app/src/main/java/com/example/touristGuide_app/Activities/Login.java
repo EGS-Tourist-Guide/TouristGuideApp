@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cachecompass_tracker_app.R;
+import com.example.touristGuide_app.R;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
