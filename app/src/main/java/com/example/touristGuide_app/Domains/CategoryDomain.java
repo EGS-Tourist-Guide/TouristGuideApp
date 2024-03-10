@@ -2,20 +2,20 @@ package com.example.touristGuide_app.Domains;
 
 public class CategoryDomain {
 
-    private String Title;
+    private String title;
     private String picPath;
 
     public CategoryDomain(String title, String picPath) {
-        Title = title;
+        this.title = title;
         this.picPath = picPath;
     }
 
     public String getTitle() {
-        return Title;
+        return title;
     }
 
     public void setTitle(String title) {
-        Title = title;
+        this.title = title;
     }
 
     public String getPicPath() {

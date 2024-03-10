@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.touristGuide_app" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="android:statusBarColor">#575757</item>
     </style>
 
     <style name="Theme.touristGuide_app" parent="Base.Theme.touristGuide_app" />

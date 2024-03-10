@@ -57,11 +57,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewPopular.setAdapter(adapterPopular);
 
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
-        catsList.add(new CategoryDomain("Beaches", "category1"));
-        catsList.add(new CategoryDomain("Museums", "category2"));
-        catsList.add(new CategoryDomain("Forest", "category3"));
-        catsList.add(new CategoryDomain("Festivals", "category4"));
-        catsList.add(new CategoryDomain("Camps", "category5"));
+        catsList.add(new CategoryDomain("Beaches", "cat1"));
+        catsList.add(new CategoryDomain("Museums", "cat2"));
+        catsList.add(new CategoryDomain("Forest", "cat3"));
+        catsList.add(new CategoryDomain("Festivals", "cat4"));
+        catsList.add(new CategoryDomain("Camps", "cat5"));
 
         recyclerViewCategory=findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));

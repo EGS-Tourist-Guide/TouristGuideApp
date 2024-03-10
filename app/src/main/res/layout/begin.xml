@@ -30,7 +30,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="18dp"
                 android:text="Let's Find The \nBest Places To Visit"
                 android:textAlignment="center"
                 android:textColor="@color/black"
@@ -55,11 +55,12 @@
                 android:id="@+id/introBtn"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginStart="64dp"
+                android:layout_marginEnd="64dp"
+                android:layout_marginTop="16dp"
 
 
-                android:layout_marginEnd="32dp"
+
                 android:background="@drawable/intro_background">
 
                 <TextView
