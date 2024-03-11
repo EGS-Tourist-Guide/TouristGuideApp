@@ -5,5 +5,5 @@
          <item name="android:statusBarColor">#575757</item>
     </style>
 
-    <style name="Theme.touristGuide_app" parent="Base.Theme.touristGuide_app" />
+    <style name="touristGuide_app" parent="Base.Theme.touristGuide_app" />
 </resources>

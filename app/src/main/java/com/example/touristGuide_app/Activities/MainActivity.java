@@ -1,6 +1,5 @@
 package com.example.touristGuide_app.Activities;
 
-import android.content.ClipData;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +11,7 @@ import com.example.touristGuide_app.Adapters.CategoryAdapter;
 import com.example.touristGuide_app.Adapters.PopularAdapter;
 import com.example.touristGuide_app.Domains.CategoryDomain;
 import com.example.touristGuide_app.Domains.PopularDomain;
-
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapterPopular, adapterCategory;

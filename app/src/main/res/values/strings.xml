@@ -1,5 +1,15 @@
 <resources>
     <string name="app_name">touristGuide_app</string>
     <string name="clear_button_label">Clear</string>
+    <string name="back"><![CDATA[<-]]></string>
+    <string name="forward"><![CDATA[->]]></string>
+    <string name="thur">THUR</string>
+    <string name="wed">WED</string>
+    <string name="tue">TUE</string>
+    <string name="mon">MON</string>
+    <string name="sun">SUN</string>
+    <string name="sat">SAT</string>
+    <string name="fri">FRI</string>
+    <string name="feb_2024">Feb 2024</string>
 
 </resources>
