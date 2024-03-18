@@ -11,5 +11,7 @@
     <string name="sat">SAT</string>
     <string name="fri">FRI</string>
     <string name="feb_2024">Feb 2024</string>
+    <string name="weekly">WEEKLY</string>
+    <string name="feb_2021">Feb 2021</string>
 
 </resources>

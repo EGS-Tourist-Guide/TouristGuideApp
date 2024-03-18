@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +19,12 @@
         android:theme="@style/touristGuide_app"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".Activities.EventEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.WeekViewActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.CalendarEmpty"
             android:exported="false" />
