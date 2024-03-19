@@ -19,6 +19,9 @@ import com.bumptech.glide.Glide;
 import com.example.touristGuide_app.Domains.PopularDomain;
 import com.example.touristGuide_app.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class DetailActivity extends AppCompatActivity {
     private TextView titleTxt, locationTxt, bedTxt, guideTxt, wifiTxt, descriptionTxt, scoreTxt;
     private PopularDomain item;
@@ -40,7 +43,11 @@ public class DetailActivity extends AppCompatActivity {
         locationTxt.setText(item.getLocation());
         bedTxt.setText(item.getBed()+" Bed");
         descriptionTxt.setText(item.getDescription());
-
+        // Exiba a data do evento na descrição
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String eventDateStr = dateFormat.format(item.getEventDate());
+        String descriptionWithDate = item.getDescription() + "\n\nEvent Date: " + eventDateStr;
+        descriptionTxt.setText(descriptionWithDate);
         if (item.isGuide()){
             guideTxt.setText("Guide");
         }else {

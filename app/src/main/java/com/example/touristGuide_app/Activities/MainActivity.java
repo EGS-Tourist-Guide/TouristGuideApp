@@ -15,6 +15,8 @@ import com.example.touristGuide_app.Adapters.PopularAdapter;
 import com.example.touristGuide_app.Domains.CategoryDomain;
 import com.example.touristGuide_app.Domains.PopularDomain;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapterPopular, adapterCategory;
@@ -36,19 +38,19 @@ public class MainActivity extends AppCompatActivity {
                 "architectural features and high-end finishes."+
                 "Feel inspired by open sight lines that"+
                 "embrace the outdoors, crowned by stunning"+
-                "coffered ceilings. ", 2, true, 4.8, "pic1", true, 1000));
+                "coffered ceilings. ", 2, true, 4.8, "pic1", true, 1000, new Date(2024, 03, 21)));
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+
                 "open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+
                 "Feel inspired by open sight lines that"+
                 "embrace the outdoors, crowned by stunning"+
-                "coffered ceilings. ", 1, false, 3, "pic2", false, 25000));
+                "coffered ceilings. ", 1, false, 3, "pic2", false, 25000, new Date(2024, 03, 25)));
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+
                 "open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+
                 "Feel inspired by open sight lines that"+
                 "embrace the outdoors, crowned by stunning"+
-                "coffered ceilings. ", 4, true, 5, "pic3", true, 30000));
+                "coffered ceilings. ", 4, true, 5, "pic3", true, 30000, new Date(2024, 03, 26)));
 
         recyclerViewPopular=findViewById(R.id.viewPop);
         recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -61,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
         catsList.add(new CategoryDomain("Forest", "cat3"));
         catsList.add(new CategoryDomain("Festivals", "cat4"));
         catsList.add(new CategoryDomain("Camps", "cat5"));
+
+        // Exemplo de adição de data ao primeiro item
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2024, Calendar.MARCH, 25); // Defina a data do evento aqui
+        Date eventDate = calendar.getTime();
+
+        items.get(0).setEventDate(eventDate);
 
         recyclerViewCategory=findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -76,5 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
     }
 }

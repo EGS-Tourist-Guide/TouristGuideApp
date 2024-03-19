@@ -2,6 +2,7 @@ package com.example.touristGuide_app.Domains;
 
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class PopularDomain implements Serializable {
 
@@ -15,7 +16,14 @@ public class PopularDomain implements Serializable {
     private boolean wifi;
     private int price;
 
-    public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price) {
+    private Date eventDate;
+
+    public Date getEventDate() {
+        return eventDate;
+    }
+
+
+    public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate) {
         this.title = title;
         this.location = location;
         this.description = description;
@@ -25,6 +33,7 @@ public class PopularDomain implements Serializable {
         this.pic = pic;
         this.wifi = wifi;
         this.price = price;
+        this.eventDate = eventDate;
     }
 
     public String getTitle() {
@@ -97,5 +106,9 @@ public class PopularDomain implements Serializable {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public void setEventDate(Date eventDate) {
+        this.eventDate = eventDate;
     }
 }
