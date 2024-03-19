@@ -54,7 +54,6 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         calendarRecyclerView.setAdapter(calendarAdapter);
     }
 
-
     public void previousMonthAction(View view)
     {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusMonths(1);
@@ -66,8 +65,6 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusMonths(1);
         setMonthView();
     }
-
-
 
     @Override
     public void onItemClick(int position, LocalDate date) {

@@ -1,6 +1,9 @@
 package com.example.touristGuide_app.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -64,5 +67,14 @@ public class MainActivity extends AppCompatActivity {
         adapterCategory = new CategoryAdapter(catsList);
         recyclerViewCategory.setAdapter(adapterCategory);
 
+        LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
+        myCalendarLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navegar para a página de calendários
+                Intent intent = new Intent(MainActivity.this, CalendarEmpty.class);
+                startActivity(intent);
+            }
+        });
     }
 }

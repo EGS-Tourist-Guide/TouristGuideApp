@@ -1,5 +1,6 @@
 package com.example.touristGuide_app.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -64,9 +66,23 @@ public class DetailActivity extends AppCompatActivity {
         btnBookNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Código para iniciar a activity_calendar quando btnBookNow for clicado
-                Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
-                startActivity(intent);
+                // Criar um AlertDialog.Builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
+                // Definir título e mensagem do popup
+                builder.setTitle("Booking Successful")
+                        .setMessage("Your booking has been successfully made.")
+                        // Adicionar botão de OK e definir seu comportamento
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Aqui você pode adicionar qualquer ação que deseja executar após o usuário clicar em OK
+                                // Neste exemplo, só vamos fechar o popup
+                                dialog.dismiss();
+                            }
+                        });
+                // Criar e exibir o AlertDialog
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
     }
