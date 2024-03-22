@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -53,7 +54,6 @@ public class DetailActivity extends AppCompatActivity {
         }else {
             guideTxt.setText("No-Guide");
         }
-
         if(item.isWifi()){
             wifiTxt.setText("WiFi");
         }else {
@@ -82,8 +82,10 @@ public class DetailActivity extends AppCompatActivity {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // Aqui você pode adicionar qualquer ação que deseja executar após o usuário clicar em OK
-                                // Neste exemplo, só vamos fechar o popup
+                                Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
+                                Toast.makeText(getApplicationContext(), "Antes: " + eventDateStr, Toast.LENGTH_SHORT).show();
+                                intent.putExtra("eventDate", item.getEventDate());
+                                startActivity(intent);
                                 dialog.dismiss();
                             }
                         });

@@ -8,12 +8,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.touristGuide_app.Activities.CalendarEmpty;
 import com.example.touristGuide_app.Activities.CalendarUtils;
 import com.example.touristGuide_app.Activities.CalendarViewHolder;
 import com.example.touristGuide_app.R;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
     private final ArrayList<LocalDate> days;
@@ -48,10 +52,16 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
             holder.dayOfMonth.setText("");
         else{
             holder.dayOfMonth.setText(String.valueOf(date.getDayOfMonth()));
-            if(date.equals(CalendarUtils.selectedDate)){
+            // Verifique se a data está na lista de datas salvas e, se estiver, defina um background diferente
+            if(date.equals(CalendarUtils.selectedDate)) {
                 holder.parentView.setBackgroundColor(Color.LTGRAY);
+//                System.out.println("Saved GRAY: " + date);
             }
-
+            // Converter LocalDate para Date
+            String dateString = date.toString();
+            if (CalendarEmpty.savingDatesByID.contains(dateString)) {
+                holder.parentView.setBackgroundColor(Color.RED);
+            }
         }
     }
 
