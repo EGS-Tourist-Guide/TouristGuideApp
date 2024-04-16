@@ -93,33 +93,38 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     @Override
     protected void onResume() {
         super.onResume();
-        // Limpar a lista antes de adicionar novas datas
-//        savingDatesByID.clear();
 
-        // Receber a data do evento da Intent
-        Date newDate = (Date) getIntent().getSerializableExtra("eventDate");
-        if (newDate != null) {
-            // Converter newDate para LocalDate
-            newLocalDate = newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            String dateString = newLocalDate.toString();
+        // esta condição evita que bugue quando tento abrir à primeira o calendario a partir da main
+        if (getIntent().getBooleanExtra("fromDetailActivity", false)) {
+            // Limpar a lista antes de adicionar novas datas
+            savingDatesByID.clear();
 
+            // Receber a data do evento da Intent
+            Date newDate = (Date) getIntent().getSerializableExtra("eventDate");
+            if (newDate != null) {
+                // Converter newDate para LocalDate
+                newLocalDate = newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                String dateString = newLocalDate.toString();
+
+                // Carregar as datas salvas anteriormente
+                loadSavedDates();
+                // Verificar se a lista não contém a nova data antes de adicioná-la
+                if (!savingDatesByID.contains(dateString)) {
+                    savingDatesByID.add(dateString);
+                    saveDates(); // Salvar a lista atualizada
+                }
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                Toast.makeText(getApplicationContext(), "Event date is set: " + dateString, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "saved: " + savingDatesByID, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Se não vier de DetailActivity, apenas mostre os dias marcados
             // Carregar as datas salvas anteriormente
             loadSavedDates();
-            // Verificar se a lista não contém a nova data antes de adicioná-la
-            System.out.println("AAAAAAA: "+ dateString);
-            System.out.println("AAAAAAA lista antes add: "+ savingDatesByID);
-            if (!savingDatesByID.contains(dateString)) {
-                savingDatesByID.add(dateString);
-                saveDates(); // Salvar a lista atualizada
-            }
-            System.out.println("AAAAAAA lista depois add: "+ savingDatesByID);
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            Toast.makeText(getApplicationContext(), "Event date is set: " + dateString, Toast.LENGTH_SHORT).show();
-            Toast.makeText(getApplicationContext(), "saved: " + savingDatesByID, Toast.LENGTH_SHORT).show();
-            System.out.println("saved: " + savingDatesByID);
         }
     }
+
     private void loadSavedDates() {
         SharedPreferences sharedPreferences = getSharedPreferences("MyDatePref", MODE_PRIVATE);
         String json = sharedPreferences.getString("savingDates", "");

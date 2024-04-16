@@ -83,8 +83,8 @@ public class DetailActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
-                                Toast.makeText(getApplicationContext(), "Antes: " + eventDateStr, Toast.LENGTH_SHORT).show();
                                 intent.putExtra("eventDate", item.getEventDate());
+                                intent.putExtra("fromDetailActivity", true); // Adiciona esta flag
                                 startActivity(intent);
                                 dialog.dismiss();
                             }
