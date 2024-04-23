@@ -15,12 +15,9 @@ public class PopularDomain implements Serializable {
     private String pic;
     private boolean wifi;
     private int price;
-
     private Date eventDate;
 
-    public Date getEventDate() {
-        return eventDate;
-    }
+    
 
 
     public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate) {
@@ -108,7 +105,12 @@ public class PopularDomain implements Serializable {
         this.price = price;
     }
 
+    public Date getEventDate() {
+        return eventDate;
+    }
+
     public void setEventDate(Date eventDate) {
         this.eventDate = eventDate;
     }
+
 }

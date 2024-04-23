@@ -20,6 +20,9 @@ import com.bumptech.glide.Glide;
 import com.example.touristGuide_app.Domains.PopularDomain;
 import com.example.touristGuide_app.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -46,9 +49,13 @@ public class DetailActivity extends AppCompatActivity {
         descriptionTxt.setText(item.getDescription());
         // Exiba a data do evento na descrição
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        String eventDateStr = dateFormat.format(item.getEventDate());
+        String eventDateStr = dateFormat.format(item.getEventDate()); // startDate
         String descriptionWithDate = item.getDescription() + "\n\nEvent Date: " + eventDateStr;
         descriptionTxt.setText(descriptionWithDate);
+        // String eventDateStartStr = dateFormat.format(item.getStartDateTime()); // startDate
+        // String eventDateEndStr = dateFormat.format(item.getEndDateTime()); // endDate
+        // String descriptionWithStartAndEndDate = item.getDescription() + "\n\nEvent Start Date: " + eventDateStartStr + "\n\nEvent End Date: " + eventDateEndStr;
+        // descriptionTxt.setText(descriptionWithStartAndEndDate);
         if (item.isGuide()){
             guideTxt.setText("Guide");
         }else {
@@ -73,6 +80,17 @@ public class DetailActivity extends AppCompatActivity {
         btnBookNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Criar um objeto JSON contendo os detalhes do evento
+                JSONObject eventDetailsJson = new JSONObject();
+                try {
+                    eventDetailsJson.put("title", item.getTitle());
+                    eventDetailsJson.put("location", item.getLocation());
+                    eventDetailsJson.put("score", item.getScore());
+                    // Adicione outros detalhes do evento conforme necessário
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 // Criar um AlertDialog.Builder
                 AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
                 // Definir título e mensagem do popup
@@ -82,8 +100,13 @@ public class DetailActivity extends AppCompatActivity {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                // Iniciar a atividade do calendário e passar os detalhes do evento como uma string extra
                                 Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
+                                intent.putExtra("eventDetails", eventDetailsJson.toString());
+                                // Toast.makeText(DetailActivity.this, "A passar: "+ item.getEventDate(), Toast.LENGTH_SHORT).show();
+                                // System.out.println("A passar: "+ item.getEventDate());
                                 intent.putExtra("eventDate", item.getEventDate());
+                                
                                 intent.putExtra("fromDetailActivity", true); // Adiciona esta flag
                                 startActivity(intent);
                                 dialog.dismiss();

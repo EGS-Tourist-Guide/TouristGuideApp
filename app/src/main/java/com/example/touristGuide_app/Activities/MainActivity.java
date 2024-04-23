@@ -1,19 +1,24 @@
 package com.example.touristGuide_app.Activities;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.touristGuide_app.R;
 import com.example.touristGuide_app.Adapters.CategoryAdapter;
 import com.example.touristGuide_app.Adapters.PopularAdapter;
 import com.example.touristGuide_app.Domains.CategoryDomain;
 import com.example.touristGuide_app.Domains.PopularDomain;
+import com.example.touristGuide_app.R;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,6 +36,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView(){
+        //////////////FILTROS
+        ConstraintLayout filterLayout = findViewById(R.id.btnFiltros);
+        filterLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFilterButtonClick(v);
+            }
+        });
+
         ArrayList<PopularDomain> items = new ArrayList<>();
         ArrayList<Date> dates = new ArrayList<>();
         Calendar calendar1 = Calendar.getInstance();
@@ -97,8 +111,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Navegar para a página de calendários
                 Intent intent = new Intent(MainActivity.this, CalendarEmpty.class);
+                intent.putExtra("fromDetailActivity", false);
                 startActivity(intent);
             }
         });
+    }
+
+
+    public void onFilterButtonClick(View view) {
+        FilterPopup filterPopup = new FilterPopup();
+        System.out.println("Saltou para o popup");
+        Toast.makeText(this, "Saltou para o popup", Toast.LENGTH_SHORT).show();
+        filterPopup.show(getSupportFragmentManager(), "filter_popup");
     }
 }

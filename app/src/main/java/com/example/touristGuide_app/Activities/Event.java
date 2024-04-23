@@ -1,8 +1,9 @@
 package com.example.touristGuide_app.Activities;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-public class Event
+public class Event implements Serializable
 {
     public static ArrayList<Event> eventsList = new ArrayList<>();
 

@@ -94,7 +94,8 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:background="@drawable/filter_background"
-                        tools:layout_marginStart="16dp">
+                        tools:layout_marginStart="16dp"
+                        android:id="@+id/btnFiltros">
 
                         <ImageView
                             android:id="@+id/imageView5"

@@ -80,9 +80,16 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
 
     @Override
     public void onItemClick(int position, LocalDate date) {
-        if (date != null){
-            CalendarUtils.selectedDate = date;
-            setMonthView();
+        
+        if (date != null) {
+            // Check if the clicked date is in savingDatesByID
+            if (savingDatesByID.contains(date.toString())) {
+                // If the clicked date is in savingDatesByID, open EventDetailActivity
+                Intent intent = new Intent(CalendarEmpty.this, EventDetailActivity.class);
+                String eventDetailsJsonString = getIntent().getStringExtra("eventDetails");
+                intent.putExtra("eventDetails", eventDetailsJsonString);
+                startActivity(intent);
+            }
         }
     }
 
@@ -100,7 +107,9 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
             savingDatesByID.clear();
 
             // Receber a data do evento da Intent
+
             Date newDate = (Date) getIntent().getSerializableExtra("eventDate");
+            // Toast.makeText(this, "Recebeu o" + newDate, Toast.LENGTH_SHORT).show();
             if (newDate != null) {
                 // Converter newDate para LocalDate
                 newLocalDate = newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -114,7 +123,9 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
                     saveDates(); // Salvar a lista atualizada
                 }
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                // Toast.makeText(getApplicationContext(), "Start date is set: " + dateString, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "End date is set: " + dateString, Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "Event date is set: " + dateString, Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "saved: " + savingDatesByID, Toast.LENGTH_SHORT).show();
             }
