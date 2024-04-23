@@ -1,5 +1,6 @@
 package com.example.touristGuide_app.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.touristGuide_app.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class FilterPopup extends DialogFragment {
 
@@ -26,6 +28,17 @@ public class FilterPopup extends DialogFragment {
         // Configurar o SeekBar para mostrar o valor em Kms
         SeekBar seekBar = view.findViewById(R.id.seekBarRadius);
         final TextView textViewRadius = view.findViewById(R.id.textViewRadius);
+
+        // Configurar o botão PIN para procurar cidade
+        FloatingActionButton btnPin = view.findViewById(R.id.btnPin);
+        btnPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Abrir a atividade PickMap
+                Intent intent = new Intent(getActivity(), PickMap.class);
+                startActivity(intent);
+            }
+        });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -53,6 +66,7 @@ public class FilterPopup extends DialogFragment {
         // Lógica para aplicar o filtro quando o botão "Apply" for clicado
         dismiss(); // Fecha o popup após aplicar o filtro
     }
+
 
 
 

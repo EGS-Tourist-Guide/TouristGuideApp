@@ -24,12 +24,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/btnPin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
-
-
         app:backgroundTint="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/textViewLocationName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +35,6 @@
         app:maxImageSize="30dp"
         app:srcCompat="@drawable/pin"
         app:tint="@color/white" />
-
     <TextView
         android:id="@+id/textViewRadius"
         android:layout_width="wrap_content"
@@ -49,7 +46,6 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/textViewLocationName"
         app:layout_constraintTop_toBottomOf="@+id/textViewLocationName" />
-
     <SeekBar
         android:id="@+id/seekBarRadius"
         android:layout_width="236dp"
@@ -62,10 +58,9 @@
 
     <TextView
         android:id="@+id/textViewPostcode"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="12sp"
         android:text="Enter the postcode"
         android:textColor="#333333"
         android:textSize="18sp"
@@ -79,7 +74,6 @@
         android:layout_height="43dp"
         android:layout_marginStart="16sp"
         android:layout_marginEnd="16sp"
-
         android:hint="Enter postcode"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/textViewPostcode"
@@ -125,7 +119,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxCategory" />
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
