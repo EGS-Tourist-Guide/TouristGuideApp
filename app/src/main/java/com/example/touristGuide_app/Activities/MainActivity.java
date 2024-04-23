@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
     }
     @Override
     public void onLocationSelected(double latitude, double longitude) {
-        System.out.println("Main activity Latitude: " + latitude + ", Longitude: " + longitude);
+        System.out.println("Main onLocationSelected activity Latitude: " + latitude + ", Longitude: " + longitude);
         Toast.makeText(this, "Retornou latitude: "+latitude+" e longitude: "+longitude, Toast.LENGTH_SHORT).show();
         // Obtém uma referência para o FilterPopup atualmente exibido
         FilterPopup filterPopup = (FilterPopup) getSupportFragmentManager().findFragmentByTag("filter_popup");
@@ -130,8 +130,16 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             double latitude = data.getDoubleExtra("latitude", 0);
             double longitude = data.getDoubleExtra("longitude", 0);
-            onLocationSelected(latitude, longitude);
+            System.out.println("Main activity onActivityResult Latitude: " + latitude + ", Longitude: " + longitude);
+
+            // Obtém uma referência para o FilterPopup atualmente exibido
+            FilterPopup filterPopup = (FilterPopup) getSupportFragmentManager().findFragmentByTag("filter_popup");
+            // Verifica se o popup está sendo exibido antes de atualizar as coordenadas
+            if (filterPopup != null) {
+                filterPopup.updateLocation(latitude, longitude);
+            }
         }
     }
+    
 
 }

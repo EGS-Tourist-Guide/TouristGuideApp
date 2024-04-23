@@ -19,6 +19,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,17 +48,18 @@ public class PickMap extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 if (latitude != 0 && longitude != 0) {
+                    System.out.println("PICKMAP: Latitude: " + latitude + " Longitude: " + longitude);
                     Intent intent = new Intent();
                     intent.putExtra("latitude", latitude);
                     intent.putExtra("longitude", longitude);
                     setResult(RESULT_OK, intent);
                     finish();
                 } else {
-                    // Exiba uma mensagem ou trate o caso em que as coordenadas não estão definidas
+                    Toast.makeText(PickMap.this, "Não foram passadas coordenadas", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
+        
         mapSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -94,4 +96,5 @@ public class PickMap extends AppCompatActivity implements OnMapReadyCallback {
         // change the marker color on map
         myMap = googleMap;
     }
+
 }
