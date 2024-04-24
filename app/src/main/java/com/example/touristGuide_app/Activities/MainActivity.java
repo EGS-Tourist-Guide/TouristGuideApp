@@ -28,8 +28,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements OnLocationSelectedListener {
-    private RecyclerView.Adapter adapterPopular, adapterCategory;
-    private RecyclerView recyclerViewPopular, recyclerViewCategory;
+    private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
+    private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,56 +46,82 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
             }
         });
         ArrayList<PopularDomain> items = new ArrayList<>();
+        // Initialize adapters and RecyclerViews for Best Stared and Oldest Places
+        ArrayList<PopularDomain> itemsBestStared = new ArrayList<>();
+        ArrayList<PopularDomain> itemsOldest = new ArrayList<>();
+
         ArrayList<Date> dates = new ArrayList<>();
+
         Calendar calendar1 = Calendar.getInstance();
-        calendar1.set(2024, Calendar.MARCH, 23);
+        calendar1.set(2024, Calendar.APRIL, 23);
         Date date1 = calendar1.getTime();
         dates.add(date1);
         Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(2024, Calendar.MARCH, 25);
+        calendar2.set(2024, Calendar.APRIL, 25);
         Date date2 = calendar2.getTime();
         dates.add(date2);
         Calendar calendar3 = Calendar.getInstance();
-        calendar3.set(2024, Calendar.MARCH, 26);
+        calendar3.set(2024, Calendar.APRIL, 26);
         Date date3 = calendar3.getTime();
         dates.add(date3);
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+
-                "open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+
-                "Feel inspired by open sight lines that"+
-                "embrace the outdoors, crowned by stunning"+
-                "coffered ceilings. ", 2, true, 4.8, "pic1", true, 1000, date1));
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+
-                "open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+
-                "Feel inspired by open sight lines that"+
-                "embrace the outdoors, crowned by stunning"+
-                "coffered ceilings. ", 1, false, 3, "pic2", false, 25000, date2));
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+
-                "open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+
-                "Feel inspired by open sight lines that"+
-                "embrace the outdoors, crowned by stunning"+
-                "coffered ceilings. ", 4, true, 5, "pic3", true, 30000, date3));
+
+
+        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
+                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+ "embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
+                 2, true, 4.8, "pic1", true, 1000, date1));
+        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
+                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
+                 1, false, 3, "pic2", false, 25000, date2));
+        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
+                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. "
+                , 4, true, 5, "pic3", true, 30000, date3));
+
+        // Add sample data for Best Stared
+        itemsBestStared.add(new PopularDomain("Best Stared Place 1", "City A", "Description", 5, true, 4.8, "pic1", true, 1000, date3));
+        itemsBestStared.add(new PopularDomain("Best Stared Place 2", "City B", "Description", 4, true, 4.5, "pic2", true, 1500, date2));
+
+        // Add sample data for Oldest Places
+        itemsOldest.add(new PopularDomain("Oldest Place 1", "City C", "Description", 3, true, 4.0, "pic3", true, 2000, date1));
+        itemsOldest.add(new PopularDomain("Oldest Place 2", "City D", "Description", 2, true, 3.5, "pic4", true, 2500, date2));
+
+        for (int i = 0; i < items.size(); i++) {
+            // Obter a data correspondente ao índice do loop
+            Date eventDate = dates.get(i);
+            items.get(i).setEventDate(eventDate);
+        }
+
+        // Set up RecyclerView and adapter for Popular Places
         recyclerViewPopular=findViewById(R.id.viewPop);
         recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapterPopular=new PopularAdapter(items);
         recyclerViewPopular.setAdapter(adapterPopular);
+
+        // Set up RecyclerView and adapter for Best Stared
+        recyclerViewBestStared = findViewById(R.id.viewBestStared);
+        recyclerViewBestStared.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterBestStared = new PopularAdapter(itemsBestStared);
+        recyclerViewBestStared.setAdapter(adapterBestStared);
+
+        // Set up RecyclerView and adapter for Oldest Places
+        recyclerViewOldest = findViewById(R.id.viewOldest);
+        recyclerViewOldest.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterOldest = new PopularAdapter(itemsOldest);
+        recyclerViewOldest.setAdapter(adapterOldest);
+
+        ////////////////////////////CATEGORIAS
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
         catsList.add(new CategoryDomain("Beaches", "cat1"));
         catsList.add(new CategoryDomain("Museums", "cat2"));
         catsList.add(new CategoryDomain("Forest", "cat3"));
         catsList.add(new CategoryDomain("Festivals", "cat4"));
         catsList.add(new CategoryDomain("Camps", "cat5"));
-        for (int i = 0; i < items.size(); i++) {
-            // Obter a data correspondente ao índice do loop
-            Date eventDate = dates.get(i);
-            items.get(i).setEventDate(eventDate);
-        }
+        
         recyclerViewCategory=findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapterCategory = new CategoryAdapter(catsList);
         recyclerViewCategory.setAdapter(adapterCategory);
+
+        ////////////////////////////Person Menu Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
