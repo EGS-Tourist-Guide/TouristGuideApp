@@ -36,6 +36,8 @@ import java.util.Locale;
 public class FilterPopup extends DialogFragment {
     private RecyclerView.Adapter adapterCategory;
     private RecyclerView recyclerViewCategory;
+    private int selectedCategoryIndex = -1;
+
 
     private OnLocationSelectedListener mListener;
     EditText editTextPostcode;
