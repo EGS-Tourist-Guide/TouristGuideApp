@@ -39,10 +39,13 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String userMail = mailEditText.getText().toString();
+                
                 String userPassword = passwordEditText.getText().toString();
                 //sendLoginRequest(userMail, userPassword);
-                String userId = "1";
-                openMainRoom(userId);
+                // String userId = "1";
+                // openMainRoom(userId);
+                // DESCOMENTAR EM CIMA DEPOIS
+                openMainRoom(userMail);
             }
         });
 

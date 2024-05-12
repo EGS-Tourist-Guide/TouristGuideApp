@@ -16,11 +16,12 @@ public class PopularDomain implements Serializable {
     private boolean wifi;
     private int price;
     private Date eventDate;
+    private String userId;
 
     
 
 
-    public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate) {
+    public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate, String userId) {
         this.title = title;
         this.location = location;
         this.description = description;
@@ -31,6 +32,15 @@ public class PopularDomain implements Serializable {
         this.wifi = wifi;
         this.price = price;
         this.eventDate = eventDate;
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getTitle() {

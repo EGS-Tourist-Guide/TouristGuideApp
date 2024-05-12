@@ -77,6 +77,7 @@ public class DetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         btnBookNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,6 +107,7 @@ public class DetailActivity extends AppCompatActivity {
                                 // Toast.makeText(DetailActivity.this, "A passar: "+ item.getEventDate(), Toast.LENGTH_SHORT).show();
                                 // System.out.println("A passar: "+ item.getEventDate());
                                 intent.putExtra("eventDate", item.getEventDate());
+                                intent.putExtra("userId", item.getUserId());
                                 
                                 intent.putExtra("fromDetailActivity", true); // Adiciona esta flag
                                 startActivity(intent);

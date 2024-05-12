@@ -30,10 +30,12 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements OnLocationSelectedListener {
     private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
     private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
+    private String userId = "0";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        userId = getIntent().getStringExtra("userId");
         initRecyclerView();
     }
     private void initRecyclerView(){
@@ -68,21 +70,21 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
 
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+ "embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 2, true, 4.8, "pic1", true, 1000, date1));
+                 2, true, 4.8, "pic1", true, 1000, date1, userId));
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 1, false, 3, "pic2", false, 25000, date2));
+                 1, false, 3, "pic2", false, 25000, date2, userId));
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. "
-                , 4, true, 5, "pic3", true, 30000, date3));
+                , 4, true, 5, "pic3", true, 30000, date3, userId));
 
         // Add sample data for Best Stared
-        itemsBestStared.add(new PopularDomain("Best Stared Place 1", "City A", "Description", 5, true, 4.8, "pic1", true, 1000, date3));
-        itemsBestStared.add(new PopularDomain("Best Stared Place 2", "City B", "Description", 4, true, 4.5, "pic2", true, 1500, date2));
+        itemsBestStared.add(new PopularDomain("Best Stared Place 1", "City A", "Description", 5, true, 4.8, "pic1", true, 1000, date3, userId));
+        itemsBestStared.add(new PopularDomain("Best Stared Place 2", "City B", "Description", 4, true, 4.5, "pic2", true, 1500, date2, userId));
 
         // Add sample data for Oldest Places
-        itemsOldest.add(new PopularDomain("Oldest Place 1", "City C", "Description", 3, true, 4.0, "pic3", true, 2000, date1));
-        itemsOldest.add(new PopularDomain("Oldest Place 2", "City D", "Description", 2, true, 3.5, "pic4", true, 2500, date2));
+        itemsOldest.add(new PopularDomain("Oldest Place 1", "City C", "Description", 3, true, 4.0, "pic3", true, 2000, date1, userId));
+        itemsOldest.add(new PopularDomain("Oldest Place 2", "City D", "Description", 2, true, 3.5, "pic4", true, 2500, date2, userId));
 
         for (int i = 0; i < items.size(); i++) {
             // Obter a data correspondente ao índice do loop
@@ -129,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
                 // Navegar para a página de calendários
                 Intent intent = new Intent(MainActivity.this, CalendarEmpty.class);
                 intent.putExtra("fromDetailActivity", false);
+                intent.putExtra("userId", userId);
                 startActivity(intent);
             }
         });

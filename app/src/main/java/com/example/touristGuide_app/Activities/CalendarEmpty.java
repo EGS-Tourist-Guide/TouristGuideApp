@@ -36,6 +36,7 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     private RecyclerView calendarRecyclerView;
     public static LocalDate newLocalDate;
     public static List<String> savingDatesByID;
+    private String userId;
 
 
     @Override
@@ -100,9 +101,16 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     @Override
     protected void onResume() {
         super.onResume();
+        
+        // popula o userId consoante o que recebe do Main/Login
+        userId = getIntent().getStringExtra("userId");
+        Toast.makeText(this, "Recebeu id "+ userId+" no CalendarEmpty", Toast.LENGTH_SHORT).show();
+        String prefFileName = "MyDatePref_" + userId;
 
         // esta condição evita que bugue quando tento abrir à primeira o calendario a partir da main
         if (getIntent().getBooleanExtra("fromDetailActivity", false)) {
+
+
             // Limpar a lista antes de adicionar novas datas
             savingDatesByID.clear();
 
@@ -116,11 +124,11 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
                 String dateString = newLocalDate.toString();
 
                 // Carregar as datas salvas anteriormente
-                loadSavedDates();
+                loadSavedDates(prefFileName);
                 // Verificar se a lista não contém a nova data antes de adicioná-la
                 if (!savingDatesByID.contains(dateString)) {
                     savingDatesByID.add(dateString);
-                    saveDates(); // Salvar a lista atualizada
+                    saveDates(prefFileName); // Salvar a lista atualizada
                 }
 
 //                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -132,12 +140,12 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         } else {
             // Se não vier de DetailActivity, apenas mostre os dias marcados
             // Carregar as datas salvas anteriormente
-            loadSavedDates();
+            loadSavedDates(prefFileName);
         }
     }
 
-    private void loadSavedDates() {
-        SharedPreferences sharedPreferences = getSharedPreferences("MyDatePref", MODE_PRIVATE);
+    private void loadSavedDates(String prefFileName) {
+        SharedPreferences sharedPreferences = getSharedPreferences(prefFileName, MODE_PRIVATE);
         String json = sharedPreferences.getString("savingDates", "");
 
         if (!json.isEmpty()) {
@@ -156,8 +164,8 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         }
     }
 
-    private void saveDates() {
-        SharedPreferences sharedPreferences = getSharedPreferences("MyDatePref", MODE_PRIVATE);
+    private void saveDates(String prefFileName) {
+        SharedPreferences sharedPreferences = getSharedPreferences(prefFileName, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Converter as LocalDate para strings de data
