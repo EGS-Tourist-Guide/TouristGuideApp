@@ -1,36 +1,55 @@
 package com.example.touristGuide_app.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.touristGuide_app.Model.User;
 import com.example.touristGuide_app.R;
+import com.example.touristGuide_app.Utils.ConfigBD;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
-    private EditText passwordEditText;
-    private EditText mailEditText;
+
+    User user;
+    FirebaseAuth firebaseAuth;
+    private EditText passwordEditText, mailEditText;
     private boolean isPasswordVisible = false;
 
     private static final int GOOGLE_LOGIN_REQUEST_CODE = 1001;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         mailEditText = findViewById(R.id.mail);
         passwordEditText = findViewById(R.id.password);
@@ -38,14 +57,22 @@ public class Login extends AppCompatActivity {
         findViewById(R.id.loginbtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userMail = mailEditText.getText().toString();
-                
-                String userPassword = passwordEditText.getText().toString();
-                //sendLoginRequest(userMail, userPassword);
-                // String userId = "1";
-                // openMainRoom(userId);
-                // DESCOMENTAR EM CIMA DEPOIS
-                openMainRoom(userMail);
+                // Valide os campos de entrada
+                if (validateFields()) {
+                    String userMail = mailEditText.getText().toString();
+                    String userPassword = passwordEditText.getText().toString();
+        
+                    // Crie um novo objeto User com as informações de entrada
+                    user = new User();
+                    user.setMail(userMail);
+                    user.setPwd(userPassword);
+
+                    // Verifique se o usuário já está autenticado
+
+
+                    signupOrLogin(userMail, userPassword);
+
+                }
             }
         });
 
@@ -75,6 +102,78 @@ public class Login extends AppCompatActivity {
             }
         });
     }
+    // Método para fazer login ou se inscrever
+    private void signupOrLogin(String email, String password) {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Login bem-sucedido, vá para a próxima tela (MainActivity)
+                            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                            if (currentUser != null) {
+                                openMainRoom(currentUser.getUid());
+                            }
+                        } else {
+                            // Se o login falhar, tente criar uma nova conta
+                            signup(email, password);
+                        }
+                    }
+                });
+    }
+
+    // Método para criar uma nova conta
+    private void signup(String email, String password) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Registro bem-sucedido, vá para a próxima tela (MainActivity)
+                            FirebaseUser newUser = task.getResult().getUser();
+                            if (newUser != null) {
+                                openMainRoom(newUser.getUid());
+                            }
+                        } else {
+                            // Se o registro falhar, mostre uma mensagem de erro
+                            Toast.makeText(Login.this, "Failed to sign up: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+    private boolean validateFields() {
+        String mail = mailEditText.getText().toString();
+        String pwd = passwordEditText.getText().toString();
+
+        if (TextUtils.isEmpty(mail)) {
+            Toast.makeText(this, "Mail is missing!!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (TextUtils.isEmpty(pwd)) {
+            Toast.makeText(this, "Password is missing!!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Método para alternar a visibilidade da senha
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            isPasswordVisible = false;
+        } else {
+            passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            isPasswordVisible = true;
+        }
+        passwordEditText.setSelection(passwordEditText.getText().length());
+    }
+
+
+
+
+//////////////////////////// GOOGLE ////////////////////////////
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -132,15 +231,10 @@ public class Login extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // Método para alternar a visibilidade da senha
-    private void togglePasswordVisibility() {
-        if (isPasswordVisible) {
-            passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            isPasswordVisible = false;
-        } else {
-            passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            isPasswordVisible = true;
-        }
-        passwordEditText.setSelection(passwordEditText.getText().length());
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Deslogar o usuário ao sair do aplicativo
+        FirebaseAuth.getInstance().signOut();
     }
 }
