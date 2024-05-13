@@ -42,7 +42,7 @@
                     app:srcCompat="@drawable/back_arrow" />
 
                 <ImageView
-                    android:id="@+id/imageView9"
+                    android:id="@+id/favoriteIcon"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_marginEnd="32dp"
@@ -251,7 +251,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_weight="1"
                     android:background="@drawable/intro_background"
-                    android:text="Book Now"
+                    android:text="Add Event to Calendar"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="@color/white"
                     android:textSize="18sp"

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "185051705558",
-    "project_id": "touristguidefirebase",
-    "storage_bucket": "touristguidefirebase.appspot.com"
+    "project_number": "541612841726",
+    "project_id": "single-physics-408004",
+    "storage_bucket": "single-physics-408004.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:185051705558:android:972a1ad7be72b340905977",
+        "mobilesdk_app_id": "1:541612841726:android:ae05ac672fd041e155e3af",
         "android_client_info": {
           "package_name": "com.example.touristGuide_app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyATFLaRevL4J-qCiHCoQnIOcVVIahZ-Plc"
+          "current_key": "AIzaSyDW02_VWnkxNHcrZzSp9NPi-NIIcJOpOu4"
         }
       ],
       "services": {

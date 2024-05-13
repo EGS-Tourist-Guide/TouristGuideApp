@@ -1,5 +1,7 @@
 package com.example.touristGuide_app.Adapters;
 
+import static com.example.touristGuide_app.Activities.CalendarEmpty.savingDatesByID;
+
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +62,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
             }
             // Converter LocalDate para Date
             String dateString = date.toString();
-            if (CalendarEmpty.savingDatesByID.contains(dateString)) {
+            System.out.println("savingDatesByID = "+ savingDatesByID);
+            if (savingDatesByID.contains(dateString)) {
                 holder.parentView.setBackgroundColor(Color.RED);
             }
         }
