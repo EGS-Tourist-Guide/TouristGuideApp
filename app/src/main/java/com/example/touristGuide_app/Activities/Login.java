@@ -69,7 +69,7 @@ public class Login extends AppCompatActivity {
 
                     // Verifique se o usuário já está autenticado
 
-
+                    // sendLoginRequest(userMail, userPassword);
                     signupOrLogin(userMail, userPassword);
 
                 }
@@ -80,7 +80,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Redirecionar para a página de login do Google
-                String googleLoginUrl = "http://192.168.26.112:3000/v1/login";
+                String googleLoginUrl = "http://touristguide:3000/v1/login";
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleLoginUrl));
                 startActivityForResult(intent, GOOGLE_LOGIN_REQUEST_CODE);
             }
@@ -187,28 +187,33 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    // Método para enviar a solicitação de login
     private void sendLoginRequest(String mail, String password) {
         // Construir o JSON com as credenciais
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("clientName", mail);
+            jsonBody.put("email", mail);
             jsonBody.put("password", password);
         } catch (JSONException e) {
+            Toast.makeText(Login.this, "Entrou aqui?", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
         // Enviar a solicitação POST para o servidor
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://192.168.26.112:3000/retrieve-api-key", jsonBody,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://touristguide/v1/login", jsonBody,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                             // Processar a resposta do servidor
-                            String apiKey = response.getString("apiKey");
-                            // Abrir a próxima página após o login bem-sucedido
-                            openMainRoom(apiKey);
+                            String userIdReq = response.getString("userId");
+                            int calendarIdReq = response.getInt("calendarId");
+                            Toast.makeText(Login.this, "userId: " + userIdReq, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "calendarId: " + calendarIdReq, Toast.LENGTH_SHORT).show();
+
+                            // Faça login no Firebase Authentication com as credenciais do usuário
+                            signupOrLogin(mail, password);
                         } catch (JSONException e) {
+                            Toast.makeText(Login.this, "Entrou aqui2?", Toast.LENGTH_SHORT).show();
                             e.printStackTrace();
                         }
                     }
@@ -222,6 +227,7 @@ public class Login extends AppCompatActivity {
         // Adicionar a solicitação à fila de solicitações
         RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
+
 
     // Método para abrir a próxima página após o login bem-sucedido
     private void openMainRoom(String userId) {
