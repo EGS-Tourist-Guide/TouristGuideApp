@@ -41,6 +41,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void setVariable() {
         item = (PopularDomain) getIntent().getSerializableExtra("object");
+        Toast.makeText(this, "userIdEP: "+item.getUserIdReq()+"\ncalendarIdEP"+item.getCalendarIdReq(), Toast.LENGTH_SHORT).show();
 
         titleTxt.setText(item.getTitle());
         scoreTxt.setText(""+ item.getScore());
@@ -107,8 +108,11 @@ public class DetailActivity extends AppCompatActivity {
                                 // Toast.makeText(DetailActivity.this, "A passar: "+ item.getEventDate(), Toast.LENGTH_SHORT).show();
                                 // System.out.println("A passar: "+ item.getEventDate());
                                 intent.putExtra("eventDate", item.getEventDate());
+
                                 intent.putExtra("userId", item.getUserId());
-                                
+                                intent.putExtra("userIdReq", item.getUserIdReq());
+                                intent.putExtra("calendarIdReq", item.getCalendarIdReq());
+
                                 intent.putExtra("fromDetailActivity", true); // Adiciona esta flag
                                 startActivity(intent);
                                 dialog.dismiss();

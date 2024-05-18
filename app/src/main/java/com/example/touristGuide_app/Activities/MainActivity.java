@@ -1,15 +1,10 @@
 package com.example.touristGuide_app.Activities;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.example.touristGuide_app.Activities.OnLocationSelectedListener;
-
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,11 +26,16 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
     private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
     private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
     private String userId = "0";
+    private int userIdReq = 0;
+    private int calendarIdReq = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         userId = getIntent().getStringExtra("userId");
+        userIdReq = getIntent().getIntExtra("userIdReq",0);
+        calendarIdReq = getIntent().getIntExtra("calendarIdReq",0);
+
         initRecyclerView();
     }
     private void initRecyclerView(){
@@ -67,24 +67,23 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
         Date date3 = calendar3.getTime();
         dates.add(date3);
 
-
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+ "embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 2, true, 4.8, "pic1", true, 1000, date1, userId));
+                 2, true, 4.8, "pic1", true, 1000, date1, userId, userIdReq, calendarIdReq));
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 1, false, 3, "pic2", false, 25000, date2, userId));
+                 1, false, 3, "pic2", false, 25000, date2, userId, userIdReq, calendarIdReq));
         items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
                 "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. "
-                , 4, true, 5, "pic3", true, 30000, date3, userId));
+                , 4, true, 5, "pic3", true, 30000, date3, userId, userIdReq, calendarIdReq));
 
         // Add sample data for Best Stared
-        itemsBestStared.add(new PopularDomain("Best Stared Place 1", "City A", "Description", 5, true, 4.8, "pic1", true, 1000, date3, userId));
-        itemsBestStared.add(new PopularDomain("Best Stared Place 2", "City B", "Description", 4, true, 4.5, "pic2", true, 1500, date2, userId));
+        itemsBestStared.add(new PopularDomain("Best Stared Place 1", "City A", "Description", 5, true, 4.8, "pic1", true, 1000, date3, userId, userIdReq, calendarIdReq));
+        itemsBestStared.add(new PopularDomain("Best Stared Place 2", "City B", "Description", 4, true, 4.5, "pic2", true, 1500, date2, userId, userIdReq, calendarIdReq));
 
         // Add sample data for Oldest Places
-        itemsOldest.add(new PopularDomain("Oldest Place 1", "City C", "Description", 3, true, 4.0, "pic3", true, 2000, date1, userId));
-        itemsOldest.add(new PopularDomain("Oldest Place 2", "City D", "Description", 2, true, 3.5, "pic4", true, 2500, date2, userId));
+        itemsOldest.add(new PopularDomain("Oldest Place 1", "City C", "Description", 3, true, 4.0, "pic3", true, 2000, date1, userId, userIdReq, calendarIdReq));
+        itemsOldest.add(new PopularDomain("Oldest Place 2", "City D", "Description", 2, true, 3.5, "pic4", true, 2500, date2, userId, userIdReq, calendarIdReq));
 
         for (int i = 0; i < items.size(); i++) {
             // Obter a data correspondente ao índice do loop
@@ -132,6 +131,9 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
                 Intent intent = new Intent(MainActivity.this, CalendarEmpty.class);
                 intent.putExtra("fromDetailActivity", false);
                 intent.putExtra("userId", userId);
+                intent.putExtra("userIdReq", userIdReq);
+                intent.putExtra("calendarIdReq", calendarIdReq);
+
                 startActivity(intent);
             }
         });

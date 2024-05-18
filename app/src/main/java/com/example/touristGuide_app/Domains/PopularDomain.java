@@ -17,11 +17,10 @@ public class PopularDomain implements Serializable {
     private int price;
     private Date eventDate;
     private String userId;
+    private int userIdReq;
+    private int calendarIdReq;
 
-    
-
-
-    public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate, String userId) {
+    public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate, String userId, int userIdReq, int calendarIdReq) {
         this.title = title;
         this.location = location;
         this.description = description;
@@ -33,8 +32,21 @@ public class PopularDomain implements Serializable {
         this.price = price;
         this.eventDate = eventDate;
         this.userId = userId;
+        this.userIdReq = userIdReq;
+        this.calendarIdReq = calendarIdReq;
     }
-
+    public int getUserIdReq() {
+        return userIdReq;
+    }
+    public void setUserIdReq(int userIdReq) {
+        this.userIdReq = userIdReq;
+    }
+    public int getCalendarIdReq() {
+        return calendarIdReq;
+    }
+    public void setCalendarIdReq(int calendarIdReq) {
+        this.calendarIdReq = calendarIdReq;
+    }
     public String getUserId() {
         return userId;
     }

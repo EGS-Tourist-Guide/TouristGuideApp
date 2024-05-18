@@ -4,7 +4,6 @@ import static com.example.touristGuide_app.Activities.CalendarUtils.daysInMonthA
 import static com.example.touristGuide_app.Activities.CalendarUtils.monthYearFromDate;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -18,17 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.touristGuide_app.Adapters.CalendarAdapter;
 import com.example.touristGuide_app.R;
 
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,9 +30,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 
 public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
@@ -47,6 +37,8 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private String userId;
+    private int userIdReq;
+    private int calendarIdReq;
     private LocalDate newLocalDate;
     public static List<String> savingDatesByID = new ArrayList<>();
 
@@ -121,16 +113,17 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
             });
         }
     }
-
     public void weeklyAction(View view) {
         startActivity(new Intent(this, WeekViewActivity.class));
     }
-
     @Override
     protected void onResume() {
         super.onResume();
         userId = getIntent().getStringExtra("userId");
-        Toast.makeText(this, "Recebeu id " + userId + " no CalendarEmpty", Toast.LENGTH_SHORT).show();
+        userIdReq = getIntent().getIntExtra("userIdReq", 0);
+        calendarIdReq = getIntent().getIntExtra("calendarIdReq", 0);
+
+        Toast.makeText(this, "Recebeu id " + userId + "\nuserIdEndpoint: "+userIdReq+ "\ncalendarIdEndpoint: "+calendarIdReq+" no CalendarEmpty", Toast.LENGTH_SHORT).show();
 
         if (getIntent().getBooleanExtra("fromDetailActivity", false)) {
             Date newDate = (Date) getIntent().getSerializableExtra("eventDate");

@@ -40,7 +40,8 @@ public class Login extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private EditText passwordEditText, mailEditText;
     private boolean isPasswordVisible = false;
-
+    int userIdReq = 0;
+    int calendarIdReq = 0;
     private static final int GOOGLE_LOGIN_REQUEST_CODE = 1001;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -69,8 +70,8 @@ public class Login extends AppCompatActivity {
 
                     // Verifique se o usuário já está autenticado
 
-                    // sendLoginRequest(userMail, userPassword);
-                    signupOrLogin(userMail, userPassword);
+                    sendLoginRequest(userMail, userPassword);
+                    // signupOrLogin(userMail, userPassword);
 
                 }
             }
@@ -80,7 +81,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Redirecionar para a página de login do Google
-                String googleLoginUrl = "http://touristguide:3000/v1/login";
+                String googleLoginUrl = "http://srv2-deti.ua.pt/login";
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleLoginUrl));
                 startActivityForResult(intent, GOOGLE_LOGIN_REQUEST_CODE);
             }
@@ -103,7 +104,7 @@ public class Login extends AppCompatActivity {
         });
     }
     // Método para fazer login ou se inscrever
-    private void signupOrLogin(String email, String password) {
+    private void signupOrLogin(String email, String password, int userIdReq, int calendarIdReq) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -112,34 +113,34 @@ public class Login extends AppCompatActivity {
                             // Login bem-sucedido, vá para a próxima tela (MainActivity)
                             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                             if (currentUser != null) {
-                                openMainRoom(currentUser.getUid());
+                                openMainRoom(currentUser.getUid(), userIdReq, calendarIdReq);
                             }
                         } else {
                             // Se o login falhar, tente criar uma nova conta
-                            signup(email, password);
+                            signup(email, password, userIdReq, calendarIdReq);
                         }
                     }
                 });
     }
 
     // Método para criar uma nova conta
-    private void signup(String email, String password) {
+    private void signup(String email, String password, int userIdReq, int calendarIdReq) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Registro bem-sucedido, vá para a próxima tela (MainActivity)
-                            FirebaseUser newUser = task.getResult().getUser();
-                            if (newUser != null) {
-                                openMainRoom(newUser.getUid());
-                            }
-                        } else {
-                            // Se o registro falhar, mostre uma mensagem de erro
-                            Toast.makeText(Login.this, "Failed to sign up: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Registro bem-sucedido, vá para a próxima tela (MainActivity)
+                    FirebaseUser newUser = task.getResult().getUser();
+                    if (newUser != null) {
+                        openMainRoom(newUser.getUid(), userIdReq, calendarIdReq);
                     }
-                });
+                } else {
+                    // Se o registro falhar, mostre uma mensagem de erro
+                    Toast.makeText(Login.this, "Failed to sign up: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
     private boolean validateFields() {
         String mail = mailEditText.getText().toString();
@@ -182,7 +183,7 @@ public class Login extends AppCompatActivity {
             // Processar os dados retornados da autenticação do Google
             if (data != null) {
                 String userId = data.getStringExtra("userId");
-                openMainRoom(userId);
+                openMainRoom(userId, userIdReq, calendarIdReq);
             }
         }
     }
@@ -199,19 +200,17 @@ public class Login extends AppCompatActivity {
         }
 
         // Enviar a solicitação POST para o servidor
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://touristguide/v1/login", jsonBody,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://srv2-deti.ua.pt/login", jsonBody,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                             // Processar a resposta do servidor
-                            String userIdReq = response.getString("userId");
-                            int calendarIdReq = response.getInt("calendarId");
-                            Toast.makeText(Login.this, "userId: " + userIdReq, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(Login.this, "calendarId: " + calendarIdReq, Toast.LENGTH_SHORT).show();
-
+                            userIdReq = response.getInt("userId");
+                            calendarIdReq = response.getInt("calendarId");
+                            Toast.makeText(Login.this, "userId: "+userIdReq+"\ncalendarId: " + calendarIdReq, Toast.LENGTH_SHORT).show();
                             // Faça login no Firebase Authentication com as credenciais do usuário
-                            signupOrLogin(mail, password);
+                            signupOrLogin(mail, password, userIdReq, calendarIdReq);
                         } catch (JSONException e) {
                             Toast.makeText(Login.this, "Entrou aqui2?", Toast.LENGTH_SHORT).show();
                             e.printStackTrace();
@@ -230,10 +229,12 @@ public class Login extends AppCompatActivity {
 
 
     // Método para abrir a próxima página após o login bem-sucedido
-    private void openMainRoom(String userId) {
+    private void openMainRoom(String userId, int userIdReq, int calendarIdReq) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("userId", userId);
-        Toast.makeText(this, "Enviou id "+ userId+" para MainActivity", Toast.LENGTH_SHORT).show();
+        intent.putExtra("userIdReq", userIdReq);
+        intent.putExtra("calendarIdReq", calendarIdReq);
+        Toast.makeText(this, "Enviou id "+ userId+" para MainActivity\nuserId: "+userIdReq+"\ncalendarId: " + calendarIdReq, Toast.LENGTH_SHORT).show();
         startActivity(intent);
     }
 
