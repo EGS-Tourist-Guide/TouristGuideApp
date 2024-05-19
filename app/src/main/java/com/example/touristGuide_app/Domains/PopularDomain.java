@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class PopularDomain implements Serializable {
-
     private String title;
     private String location;
     private String description;
@@ -19,7 +18,6 @@ public class PopularDomain implements Serializable {
     private String userId;
     private int userIdReq;
     private int calendarIdReq;
-
     public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate, String userId, int userIdReq, int calendarIdReq) {
         this.title = title;
         this.location = location;
@@ -50,89 +48,67 @@ public class PopularDomain implements Serializable {
     public String getUserId() {
         return userId;
     }
-
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
-
     public String getLocation() {
         return location;
     }
-
     public void setLocation(String location) {
         this.location = location;
     }
-
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
-
     public int getBed() {
         return bed;
     }
-
     public void setBed(int bed) {
         this.bed = bed;
     }
-
     public boolean isGuide() {
         return guide;
     }
-
     public void setGuide(boolean guide) {
         this.guide = guide;
     }
-
     public double getScore() {
         return score;
     }
-
     public void setScore(double score) {
         this.score = score;
     }
-
     public String getPic() {
         return pic;
     }
-
     public void setPic(String pic) {
         this.pic = pic;
     }
-
     public boolean isWifi() {
         return wifi;
     }
-
     public void setWifi(boolean wifi) {
         this.wifi = wifi;
     }
-
     public int getPrice() {
         return price;
     }
-
     public void setPrice(int price) {
         this.price = price;
     }
-
     public Date getEventDate() {
         return eventDate;
     }
-
     public void setEventDate(Date eventDate) {
         this.eventDate = eventDate;
     }
-
 }

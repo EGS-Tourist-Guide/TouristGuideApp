@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.touristGuide_app.Adapters.CategoryAdapter;
+import com.example.touristGuide_app.Adapters.PointOfInterestAdapter;
 import com.example.touristGuide_app.Adapters.PopularAdapter;
 import com.example.touristGuide_app.Domains.CategoryDomain;
+import com.example.touristGuide_app.Domains.PointOfInterestDomain;
 import com.example.touristGuide_app.Domains.PopularDomain;
 import com.example.touristGuide_app.R;
 
@@ -24,6 +26,8 @@ import java.util.Date;
 
 public class ListOfPointOfInterest extends AppCompatActivity implements OnLocationSelectedListener {
     private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
+    private RecyclerView recyclerViewPoi;
+    private RecyclerView.Adapter adapterPoi;
     private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
     private String userId = "0";
     private int userIdReq = 0;
@@ -47,67 +51,16 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                 onFilterButtonClick(v);
             }
         });
-        ArrayList<PopularDomain> items = new ArrayList<>();
-        // Initialize adapters and RecyclerViews for Best Stared and Oldest Places
-        ArrayList<PopularDomain> itemsBestStared = new ArrayList<>();
-        ArrayList<PopularDomain> itemsOldest = new ArrayList<>();
+        ////////////////////////////POIS
+        ArrayList<PointOfInterestDomain> pois = new ArrayList<>();
+        pois.add(new PointOfInterestDomain("1", "Praia da Marinha", "Algarve, Portugal", 37.08749965, -8.406331708, null, "8400-407", "Praia da Marinha is one of the most emblematic and beautiful beaches in the Algarve region. It features stunning cliffs, crystal-clear waters, and golden sand.", "Nature", "pic1"));
 
-        ArrayList<Date> dates = new ArrayList<>();
+        recyclerViewPoi = findViewById(R.id.recyclerViewPoi);
+        recyclerViewPoi.setLayoutManager(new LinearLayoutManager(this));
+        System.out.println("Antes do pointofinteredestadapter");
+        adapterPoi = new PointOfInterestAdapter(pois);
+        recyclerViewPoi.setAdapter(adapterPoi);
 
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.set(2024, Calendar.APRIL, 23);
-        Date date1 = calendar1.getTime();
-        dates.add(date1);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(2024, Calendar.APRIL, 25);
-        Date date2 = calendar2.getTime();
-        dates.add(date2);
-        Calendar calendar3 = Calendar.getInstance();
-        calendar3.set(2024, Calendar.APRIL, 26);
-        Date date3 = calendar3.getTime();
-        dates.add(date3);
-
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+ "embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 2, true, 4.8, "pic1", true, 1000, date1, userId, userIdReq, calendarIdReq));
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 1, false, 3, "pic2", false, 25000, date2, userId, userIdReq, calendarIdReq));
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. "
-                , 4, true, 5, "pic3", true, 30000, date3, userId, userIdReq, calendarIdReq));
-
-        // Add sample data for Best Stared
-        itemsBestStared.add(new PopularDomain("Best Stared Place 1", "City A", "Description", 5, true, 4.8, "pic1", true, 1000, date3, userId, userIdReq, calendarIdReq));
-        itemsBestStared.add(new PopularDomain("Best Stared Place 2", "City B", "Description", 4, true, 4.5, "pic2", true, 1500, date2, userId, userIdReq, calendarIdReq));
-
-        // Add sample data for Oldest Places
-        itemsOldest.add(new PopularDomain("Oldest Place 1", "City C", "Description", 3, true, 4.0, "pic3", true, 2000, date1, userId, userIdReq, calendarIdReq));
-        itemsOldest.add(new PopularDomain("Oldest Place 2", "City D", "Description", 2, true, 3.5, "pic4", true, 2500, date2, userId, userIdReq, calendarIdReq));
-
-        for (int i = 0; i < items.size(); i++) {
-            // Obter a data correspondente ao índice do loop
-            Date eventDate = dates.get(i);
-            items.get(i).setEventDate(eventDate);
-        }
-
-        // Set up RecyclerView and adapter for Popular Places
-        recyclerViewPopular=findViewById(R.id.viewPop);
-        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterPopular=new PopularAdapter(items);
-        recyclerViewPopular.setAdapter(adapterPopular);
-
-        // Set up RecyclerView and adapter for Best Stared
-        recyclerViewBestStared = findViewById(R.id.viewBestStared);
-        recyclerViewBestStared.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterBestStared = new PopularAdapter(itemsBestStared);
-        recyclerViewBestStared.setAdapter(adapterBestStared);
-
-        // Set up RecyclerView and adapter for Oldest Places
-        recyclerViewOldest = findViewById(R.id.viewOldest);
-        recyclerViewOldest.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterOldest = new PopularAdapter(itemsOldest);
-        recyclerViewOldest.setAdapter(adapterOldest);
 
         ////////////////////////////CATEGORIAS
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
@@ -171,6 +124,4 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
             }
         }
     }
-    
-
 }
