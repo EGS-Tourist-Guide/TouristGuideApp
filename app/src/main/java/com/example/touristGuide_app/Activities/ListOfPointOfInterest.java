@@ -2,6 +2,7 @@ package com.example.touristGuide_app.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -12,23 +13,29 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.touristGuide_app.Adapters.CategoryAdapter;
 import com.example.touristGuide_app.Adapters.PointOfInterestAdapter;
-import com.example.touristGuide_app.Adapters.PopularAdapter;
 import com.example.touristGuide_app.Domains.CategoryDomain;
 import com.example.touristGuide_app.Domains.PointOfInterestDomain;
-import com.example.touristGuide_app.Domains.PopularDomain;
 import com.example.touristGuide_app.R;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+
+import android.os.AsyncTask;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class ListOfPointOfInterest extends AppCompatActivity implements OnLocationSelectedListener {
-    private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
+    private RecyclerView.Adapter adapterCategory;
     private RecyclerView recyclerViewPoi;
-    private RecyclerView.Adapter adapterPoi;
-    private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
+    private PointOfInterestAdapter adapterPoi;
+    private RecyclerView recyclerViewCategory;
     private String userId = "0";
     private int userIdReq = 0;
     private int calendarIdReq = 0;
@@ -40,7 +47,10 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         userIdReq = getIntent().getIntExtra("userIdReq",0);
         calendarIdReq = getIntent().getIntExtra("calendarIdReq",0);
 
+        System.out.println("onCreate?");
+
         initRecyclerView();
+
     }
     private void initRecyclerView(){
         //////////////FILTROS
@@ -51,17 +61,8 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                 onFilterButtonClick(v);
             }
         });
-        ////////////////////////////POIS
-        ArrayList<PointOfInterestDomain> pois = new ArrayList<>();
-        pois.add(new PointOfInterestDomain("1", "Praia da Marinha", "Algarve, Portugal", 37.08749965, -8.406331708, null, "8400-407", "Praia da Marinha is one of the most emblematic and beautiful beaches in the Algarve region. It features stunning cliffs, crystal-clear waters, and golden sand.", "Nature", "pic1"));
 
-        recyclerViewPoi = findViewById(R.id.recyclerViewPoi);
-        recyclerViewPoi.setLayoutManager(new LinearLayoutManager(this));
-        System.out.println("Antes do pointofinteredestadapter");
-        adapterPoi = new PointOfInterestAdapter(pois);
-        recyclerViewPoi.setAdapter(adapterPoi);
-
-
+        fetchPOIsFromGraphQL();
         ////////////////////////////CATEGORIAS
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
         catsList.add(new CategoryDomain("Beaches", "cat1"));
@@ -123,5 +124,59 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                 filterPopup.updateLocation(latitude, longitude);
             }
         }
+    }
+
+
+    private void initRecyclerPOIView(ArrayList<PointOfInterestDomain> pois) {
+        // Configura o RecyclerView e o adaptador após receber os POIs
+        recyclerViewPoi = findViewById(R.id.recyclerViewPoi);
+        recyclerViewPoi.setLayoutManager(new LinearLayoutManager(this));
+        adapterPoi = new PointOfInterestAdapter(pois);
+        recyclerViewPoi.setAdapter(adapterPoi);
+
+        // Aqui você pode adicionar prints para verificar se os POIs foram recebidos corretamente
+        Log.d("ListOfPointOfInterest", "POIs recebidos: " + pois.size());
+    }
+
+    private void fetchPOIsFromGraphQL() {
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("query", "query findPOIs { searchPointsOfInterest(searchInput: {}, apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\") { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } }");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://srv2-deti.ua.pt/graphql", jsonBody,
+                response -> {
+                    try {
+                        JSONArray poiArray = response.getJSONObject("data").getJSONArray("searchPointsOfInterest");
+                        ArrayList<PointOfInterestDomain> pois = new ArrayList<>();
+                        for (int i = 0; i < poiArray.length(); i++) {
+                            JSONObject poiObject = poiArray.getJSONObject(i);
+                            String id = poiObject.getString("_id");
+                            String name = poiObject.getString("name");
+                            String locationName = poiObject.getString("locationName");
+                            JSONObject location = poiObject.getJSONObject("location");
+                            double latitude = location.getJSONArray("coordinates").getDouble(1);
+                            double longitude = location.getJSONArray("coordinates").getDouble(0);
+                            String street = poiObject.optString("street", null);
+                            String postcode = poiObject.optString("postcode", null);
+                            String description = poiObject.getString("description");
+                            String category = poiObject.getString("category");
+                            String thumbnail = poiObject.getString("thumbnail");
+
+                            pois.add(new PointOfInterestDomain(id, name, locationName, latitude, longitude, street, postcode, description, category, thumbnail));
+                        }
+                        runOnUiThread(() -> initRecyclerPOIView(pois));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(ListOfPointOfInterest.this, "Erro ao processar resposta JSON", Toast.LENGTH_SHORT).show();
+                    }
+                }, error -> {
+            Toast.makeText(ListOfPointOfInterest.this, "Erro na solicitação: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 }

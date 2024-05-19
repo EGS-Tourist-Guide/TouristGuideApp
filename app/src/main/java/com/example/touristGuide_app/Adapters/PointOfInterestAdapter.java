@@ -22,6 +22,9 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
     public PointOfInterestAdapter(ArrayList<PointOfInterestDomain> items) {
         this.items = items;
     }
+
+
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
