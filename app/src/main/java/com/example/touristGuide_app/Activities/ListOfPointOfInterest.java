@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements OnLocationSelectedListener {
+public class ListOfPointOfInterest extends AppCompatActivity implements OnLocationSelectedListener {
     private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
     private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
     private String userId = "0";
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.list_of_pois);
         userId = getIntent().getStringExtra("userId");
         userIdReq = getIntent().getIntExtra("userIdReq",0);
         calendarIdReq = getIntent().getIntExtra("calendarIdReq",0);
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements OnLocationSelecte
             @Override
             public void onClick(View v) {
                 // Navegar para a página de calendários
-                Intent intent = new Intent(MainActivity.this, CalendarEmpty.class);
+                Intent intent = new Intent(ListOfPointOfInterest.this, CalendarEmpty.class);
                 intent.putExtra("fromDetailActivity", false);
                 intent.putExtra("userId", userId);
                 intent.putExtra("userIdReq", userIdReq);

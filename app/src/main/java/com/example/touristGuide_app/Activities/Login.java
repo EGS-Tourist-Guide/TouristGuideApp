@@ -20,15 +20,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.touristGuide_app.Model.User;
 import com.example.touristGuide_app.R;
-import com.example.touristGuide_app.Utils.ConfigBD;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
@@ -230,7 +225,7 @@ public class Login extends AppCompatActivity {
 
     // Método para abrir a próxima página após o login bem-sucedido
     private void openMainRoom(String userId, int userIdReq, int calendarIdReq) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ListOfPointOfInterest.class);
         intent.putExtra("userId", userId);
         intent.putExtra("userIdReq", userIdReq);
         intent.putExtra("calendarIdReq", calendarIdReq);

@@ -42,7 +42,10 @@
             android:name=".Activities.DetailActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".Activities.ListOfPointOfInterest"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.ListOfEvents"
             android:exported="false" />
         <activity
             android:name=".Activities.Login"
