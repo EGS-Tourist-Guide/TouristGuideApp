@@ -31,7 +31,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class ListOfPointOfInterest extends AppCompatActivity implements OnLocationSelectedListener {
+public class ListOfPointOfInterest extends AppCompatActivity implements OnLocationSelectedListener, CategoryAdapter.OnCategorySelectedListener {
     private RecyclerView.Adapter adapterCategory;
     private RecyclerView recyclerViewPoi;
     private PointOfInterestAdapter adapterPoi;
@@ -39,6 +39,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
     private String userId = "0";
     private int userIdReq = 0;
     private int calendarIdReq = 0;
+    private String selectedCategory = null; // Categoria selecionada
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,18 +63,20 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
             }
         });
 
-        fetchPOIsFromGraphQL();
+        ////////////////////////////POIS
+        fetchPOIsFromGraphQL(null);
+
         ////////////////////////////CATEGORIAS
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
-        catsList.add(new CategoryDomain("Beaches", "cat1"));
-        catsList.add(new CategoryDomain("Museums", "cat2"));
-        catsList.add(new CategoryDomain("Forest", "cat3"));
-        catsList.add(new CategoryDomain("Festivals", "cat4"));
-        catsList.add(new CategoryDomain("Camps", "cat5"));
+        catsList.add(new CategoryDomain("Nature", "cat1"));
+        catsList.add(new CategoryDomain("Food", "cat2"));
+        catsList.add(new CategoryDomain("Culture", "cat3"));
+        catsList.add(new CategoryDomain("Shopping", "cat4"));
+        catsList.add(new CategoryDomain("Landmarks", "cat5"));
         
         recyclerViewCategory=findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterCategory = new CategoryAdapter(catsList);
+        adapterCategory = new CategoryAdapter(catsList, this);
         recyclerViewCategory.setAdapter(adapterCategory);
 
         ////////////////////////////Person Menu Icon
@@ -92,6 +95,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
             }
         });
     }
+
     public void onFilterButtonClick(View view) {
         FilterPopup filterPopup = new FilterPopup();
         // Defina este MainActivity como o listener para receber as coordenadas selecionadas
@@ -138,12 +142,33 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         Log.d("ListOfPointOfInterest", "POIs recebidos: " + pois.size());
     }
 
-    private void fetchPOIsFromGraphQL() {
+
+    // Manipular seleção de categoria
+    @Override
+    public void onCategorySelected(String category) {
+        selectedCategory = category;
+        fetchPOIsFromGraphQL(selectedCategory);
+    }
+
+    @Override
+    public void onCategoryDeselected(String category) {
+        if (selectedCategory != null && selectedCategory.equals(category)) {
+            selectedCategory = null;
+            fetchPOIsFromGraphQL(null);
+        }
+    }
+    private void fetchPOIsFromGraphQL(@Nullable String category) {
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("query", "query findPOIs { searchPointsOfInterest(searchInput: {}, apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\") { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } }");
+            String query = "query findPOIs { searchPointsOfInterest(searchInput: {";
+            if (category != null) {
+                query += " category: \"" + category + "\",";
+            }
+            query += " }, apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\") { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } }";
+            jsonBody.put("query", query);
         } catch (JSONException e) {
             e.printStackTrace();
+            Toast.makeText(ListOfPointOfInterest.this, "Erro ao enviar o request JSON", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -163,10 +188,10 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                             String street = poiObject.optString("street", null);
                             String postcode = poiObject.optString("postcode", null);
                             String description = poiObject.getString("description");
-                            String category = poiObject.getString("category");
+                            String categoryReceived = poiObject.getString("category");
                             String thumbnail = poiObject.getString("thumbnail");
 
-                            pois.add(new PointOfInterestDomain(id, name, locationName, latitude, longitude, street, postcode, description, category, thumbnail));
+                            pois.add(new PointOfInterestDomain(id, name, locationName, latitude, longitude, street, postcode, description, categoryReceived, thumbnail));
                         }
                         runOnUiThread(() -> initRecyclerPOIView(pois));
                     } catch (JSONException e) {

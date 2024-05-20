@@ -110,6 +110,7 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         recyclerViewOldest.setAdapter(adapterOldest);
 
         ////////////////////////////CATEGORIAS
+        /*
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
         catsList.add(new CategoryDomain("Beaches", "cat1"));
         catsList.add(new CategoryDomain("Museums", "cat2"));
@@ -121,7 +122,7 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapterCategory = new CategoryAdapter(catsList);
         recyclerViewCategory.setAdapter(adapterCategory);
-
+        */
         ////////////////////////////Person Menu Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {

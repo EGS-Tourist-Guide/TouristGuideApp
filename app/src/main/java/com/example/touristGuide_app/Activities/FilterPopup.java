@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class FilterPopup extends DialogFragment {
+public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCategorySelectedListener{
     private RecyclerView.Adapter adapterCategory;
     private RecyclerView recyclerViewCategory;
     private int selectedCategoryIndex = -1;
@@ -43,6 +44,8 @@ public class FilterPopup extends DialogFragment {
     EditText editTextPostcode;
     private double latitude = 0; // Variável para armazenar a latitude recebida
     private double longitude = 0; // Variável para armazenar a longitude recebida
+    private String selectedCategory = null;
+    private float selectedRadius = 0;
 
     @Nullable
     @Override
@@ -90,6 +93,15 @@ public class FilterPopup extends DialogFragment {
             }
         });
 
+
+        Button applyFiltersButton = view.findViewById(R.id.btnApplyFilter);
+        applyFiltersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                applyFilters();
+            }
+        });
+
         // Retornar a view inflada
         return view;
     }
@@ -106,26 +118,47 @@ public class FilterPopup extends DialogFragment {
     private void initRecyclerView(View view){
         // Initialize RecyclerView and adapter for categories
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
-        catsList.add(new CategoryDomain("Beaches", "cat1"));
-        catsList.add(new CategoryDomain("Museums", "cat2"));
-        catsList.add(new CategoryDomain("Forest", "cat3"));
-        catsList.add(new CategoryDomain("Festivals", "cat4"));
-        catsList.add(new CategoryDomain("Camps", "cat5"));
+        catsList.add(new CategoryDomain("Nature", "cat1"));
+        catsList.add(new CategoryDomain("Food", "cat2"));
+        catsList.add(new CategoryDomain("Culture", "cat3"));
+        catsList.add(new CategoryDomain("Shopping", "cat4"));
+        catsList.add(new CategoryDomain("Landmark", "cat5"));
 
         recyclerViewCategory = view.findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        adapterCategory = new CategoryAdapter(catsList);
+        adapterCategory = new CategoryAdapter(catsList, this);
         recyclerViewCategory.setAdapter(adapterCategory);
 
     }
 
+    @Override
+    public void onCategoryDeselected(String category) {
+        // Implementar a lógica de desselecionar uma categoria, se necessário
+        if (selectedCategory != null && selectedCategory.equals(category)) {
+            selectedCategory = null;
+        }
+    }
+    @Override
+    public void onCategorySelected(String category) {
+        // Atualizar a categoria selecionada
+        selectedCategory = category;
+    }
 
-    public void applyFilter(View view) {
-        // Toast.makeText(this, "aplicado filtro", Toast.LENGTH_SHORT).show();
-        // QUANDO O USER FIZER AS SUAS OPÇÕES DE FILTROS GUARDAMOS A INFO E CLICAMOS EM
-        // APPLY E CHAMAMOS O ENDPOINT
-        // COM OS INPUT SELECIONADOS NO FILTRO E MANDAMOS PARA RECEBER UMA LISTA DE IDS
-        // DE EVENTOS
+    public void applyFilters() {
+        // Coletar os valores dos filtros
+        String postcode = editTextPostcode.getText().toString();
+
+        // Crie um Intent para a próxima atividade
+        Intent intent = new Intent(getActivity(), ListOfPointOfInterest.class);
+        intent.putExtra("latitude", latitude);
+        intent.putExtra("longitude", longitude);
+        intent.putExtra("postcode", postcode);
+        intent.putExtra("radius", selectedRadius);
+        intent.putExtra("category", selectedCategory);
+
+        // Iniciar a próxima atividade com os filtros selecionados
+        startActivity(intent);
+
         dismiss(); // Fecha o popup após aplicar o filtro
     }
 
@@ -162,7 +195,6 @@ public class FilterPopup extends DialogFragment {
             e.printStackTrace();
         }
     }
-
 
     public void setOnLocationSelectedListener(OnLocationSelectedListener listener) {
         this.mListener = listener;

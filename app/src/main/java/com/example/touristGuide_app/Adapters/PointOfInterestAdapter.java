@@ -38,13 +38,24 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
         holder.nameTxt.setText(item.getName());
         holder.descriptionTxt.setText(item.getDescription());
         holder.locationTxt.setText(item.getLocationName());
+        holder.categoryOfPoiTxt.setText(item.getCategory());
 
-        int resourceId = holder.itemView.getContext().getResources().getIdentifier(item.getThumbnail(), "drawable", holder.itemView.getContext().getPackageName());
-        Log.d("POIAdapter", "Loading image with resourceId: " + resourceId);
-        Glide.with(holder.itemView.getContext())
-                .load(resourceId)
-                .transform(new CenterCrop(), new GranularRoundedCorners(20, 20, 20, 20))
-                .into(holder.thumbnail);
+        // Verifique se o thumbnail é um URL ou um nome de recurso local
+        String thumbnail = item.getThumbnail();
+        if (thumbnail.startsWith("http")) {
+            // Carregar imagem de URL
+            Glide.with(holder.itemView.getContext())
+                    .load(thumbnail)
+                    .transform(new CenterCrop(), new GranularRoundedCorners(20, 20, 20, 20))
+                    .into(holder.thumbnail);
+        } else {
+            // Carregar imagem de recurso local
+            int resourceId = holder.itemView.getContext().getResources().getIdentifier(thumbnail, "drawable", holder.itemView.getContext().getPackageName());
+            Glide.with(holder.itemView.getContext())
+                    .load(resourceId)
+                    .transform(new CenterCrop(), new GranularRoundedCorners(20, 20, 20, 20))
+                    .into(holder.thumbnail);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), ListOfEvents.class);
@@ -57,7 +68,7 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
         return items.size();
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTxt, locationTxt, descriptionTxt;
+        TextView nameTxt, locationTxt, descriptionTxt, categoryOfPoiTxt;
         ImageView thumbnail;
 
         public ViewHolder(@NonNull View itemView) {
@@ -65,6 +76,7 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
             nameTxt = itemView.findViewById(R.id.nameTxt);
             descriptionTxt = itemView.findViewById(R.id.descriptionTxt);
             locationTxt = itemView.findViewById(R.id.locationTxt);
+            categoryOfPoiTxt = itemView.findViewById(R.id.categoryOfPoiTxt);
             thumbnail = itemView.findViewById(R.id.thumbnailImg);
         }
     }

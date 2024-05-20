@@ -16,10 +16,12 @@ import com.example.touristGuide_app.Domains.CategoryDomain;
 import java.util.ArrayList;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder>  {
+    private OnCategorySelectedListener listener; // Listener para comunicar a seleção
     ArrayList<CategoryDomain> items;
 
-    public CategoryAdapter(ArrayList<CategoryDomain> items) {
+    public CategoryAdapter(ArrayList<CategoryDomain> items, OnCategorySelectedListener listener) {
         this.items = items;
+        this.listener = listener; // Inicializa o listener
     }
 
     @NonNull
@@ -52,13 +54,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         }
 
         // Configura o clique no item para alternar o estado de seleção
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Atualiza o estado de seleção
-                holder.isSelected = !holder.isSelected; // FLAG para alternar o estado de seleção
-                // Notifica o adaptador de que os dados foram alterados para atualizar a aparência do item
-                notifyDataSetChanged();
+        holder.itemView.setOnClickListener(v -> {
+            holder.isSelected = !holder.isSelected; // Alterna o estado de seleção
+            notifyDataSetChanged(); // Notifica o adaptador de que os dados foram alterados para atualizar a aparência do item
+
+            // Notifica o listener da categoria selecionada
+            if (holder.isSelected) {
+                listener.onCategorySelected(category.getTitle());
+            } else {
+                listener.onCategoryDeselected(category.getTitle());
             }
         });
     }
@@ -81,5 +85,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             picImg=itemView.findViewById(R.id.catImg);
             isSelected = false; // Inicializa como não selecionado
         }
+    }
+    // Interface para comunicar a seleção de categoria
+    public interface OnCategorySelectedListener {
+        void onCategorySelected(String category);
+        void onCategoryDeselected(String category);
     }
 }
