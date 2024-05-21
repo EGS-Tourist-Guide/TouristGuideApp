@@ -142,7 +142,7 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
     public void onFilterButtonClick(View view) {
         FilterPopup filterPopup = new FilterPopup();
         // Defina este MainActivity como o listener para receber as coordenadas selecionadas
-        filterPopup.setOnLocationSelectedListener(this);
+        // filterPopup.setOnLocationSelectedListener(this);
         filterPopup.show(getSupportFragmentManager(), "filter_popup");
     }
     @Override

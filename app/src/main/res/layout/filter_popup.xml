@@ -48,71 +48,71 @@
             app:layout_constraintStart_toStartOf="@+id/textViewLocationName"
             app:layout_constraintTop_toBottomOf="@+id/textViewLocationName" />
 
-        <SeekBar
-            android:id="@+id/seekBarRadius"
-            android:layout_width="236dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:max="100000"
-            android:progress="0"
-            app:layout_constraintStart_toStartOf="@+id/textViewRadius"
-            app:layout_constraintTop_toBottomOf="@+id/textViewRadius" />
+
+    <!-- width a 0dp fica com a largura dos de baixo -->
+    <SeekBar
+        android:id="@+id/seekBarRadius"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:progress="0"
+        app:layout_constraintEnd_toEndOf="@+id/viewCat"
+        app:layout_constraintStart_toStartOf="@+id/textViewRadius"
+        app:layout_constraintTop_toBottomOf="@+id/textViewRadius" />
+
+    <TextView
+        android:id="@+id/textViewPostcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="City"
+        android:textColor="#333333"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/textViewRadius"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarRadius" />
+<!--    android:hint="XXXX-XXX"
+    android:inputType="number"-->
+    <EditText
+        android:id="@+id/editTextLocationName"
+        android:layout_width="125dp"
+        android:layout_height="40dp"
+
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewPostcode"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="@+id/textViewPostcode" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/viewCat"
+        app:layout_constraintStart_toStartOf="@+id/textViewPostcode"
+        app:layout_constraintTop_toBottomOf="@+id/textViewPostcode">
 
         <TextView
-            android:id="@+id/textViewPostcode"
+            android:id="@+id/CabecalhoCategoryHzt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Category"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/ConteudoCategoryHzt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Enter the postcode"
-            android:textColor="#333333"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/seekBarRadius"
-            app:layout_constraintTop_toBottomOf="@+id/seekBarRadius" />
-
-        <EditText
-            android:id="@+id/editTextPostcode"
-            android:layout_width="90dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="16sp"
-            android:hint="XXXX-XXX"
-            android:inputType="number"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/textViewPostcode"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textViewPostcode"
-            app:layout_constraintTop_toTopOf="@+id/textViewPostcode" />
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@+id/editTextPostcode"
-            app:layout_constraintStart_toStartOf="@+id/textViewPostcode"
-            app:layout_constraintTop_toBottomOf="@+id/textViewPostcode">
-
-            <TextView
-                android:id="@+id/CabecalhoCategoryHzt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Category"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/ConteudoCategoryHzt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="See all"
-                android:textColor="@color/orange"
-                android:textSize="16sp" />
+            android:text="See all"
+            android:textColor="@color/orange"
+            android:textSize="16sp" />
 
 
-        </LinearLayout>
+    </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/viewCat"

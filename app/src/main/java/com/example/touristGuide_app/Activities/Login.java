@@ -165,10 +165,6 @@ public class Login extends AppCompatActivity {
         }
         passwordEditText.setSelection(passwordEditText.getText().length());
     }
-
-
-
-
 //////////////////////////// GOOGLE ////////////////////////////
 
     @Override
@@ -182,7 +178,6 @@ public class Login extends AppCompatActivity {
             }
         }
     }
-
     private void sendLoginRequest(String mail, String password) {
         // Construir o JSON com as credenciais
         JSONObject jsonBody = new JSONObject();
@@ -193,7 +188,6 @@ public class Login extends AppCompatActivity {
             Toast.makeText(Login.this, "Entrou aqui?", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
         // Enviar a solicitação POST para o servidor
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://srv2-deti.ua.pt/login", jsonBody,
                 new Response.Listener<JSONObject>() {
@@ -221,8 +215,6 @@ public class Login extends AppCompatActivity {
         // Adicionar a solicitação à fila de solicitações
         RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-
-
     // Método para abrir a próxima página após o login bem-sucedido
     private void openMainRoom(String userId, int userIdReq, int calendarIdReq) {
         Intent intent = new Intent(this, ListOfPointOfInterest.class);

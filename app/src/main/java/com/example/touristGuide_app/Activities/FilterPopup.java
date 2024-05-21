@@ -37,13 +37,11 @@ import java.util.Locale;
 public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCategorySelectedListener{
     private RecyclerView.Adapter adapterCategory;
     private RecyclerView recyclerViewCategory;
+    private OnFilterAppliedListener filterAppliedListener;
+    private OnLocationSelectedListener locationSelectedListener;
+    private EditText editTextLocationName;
     private int selectedCategoryIndex = -1;
-
-
-    private OnLocationSelectedListener mListener;
-    EditText editTextPostcode;
-    private double latitude = 0; // Variável para armazenar a latitude recebida
-    private double longitude = 0; // Variável para armazenar a longitude recebida
+    private double latitude = 0, longitude = 0; // Variável para armazenar a longitude recebida
     private String selectedCategory = null;
     private float selectedRadius = 0;
 
@@ -57,10 +55,8 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
         // Inicialize o RecyclerView
         initRecyclerView(view);
         // Acessar a EditText e armazená-la como uma variável de instância
-        editTextPostcode = view.findViewById(R.id.editTextPostcode);
-
-        // Configurar o SeekBar para mostrar o valor em Kms
-        SeekBar seekBar = view.findViewById(R.id.seekBarRadius);
+        editTextLocationName = view.findViewById(R.id.editTextLocationName);
+        SeekBar seekBar = view.findViewById(R.id.seekBarRadius); // Configurar o SeekBar para mostrar o valor em Kms
         final TextView textViewRadius = view.findViewById(R.id.textViewRadius);
         // Configurar o botão PIN do mapa para procurar cidade
         FloatingActionButton btnPin = view.findViewById(R.id.btnPin);
@@ -73,21 +69,20 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
             }
         });
 
+        // Definir o intervalo do SeekBar de 0 a 50000 (para 0.1 km a 50 km)
+        seekBar.setMax(50000);
+        seekBar.setProgress(100); // Ponto inicial em 100 metros
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // Converter o progresso do SeekBar para Kms
-                float distanceInMeters = progress; // Valor máximo em metros
-                float distanceInKms = distanceInMeters / 1000; // Converter para Kms
-
+                // Ajustar o valor mínimo para 100 metros
+                selectedRadius = (progress + 100) / 1000f; // Converter para Kms, mínimo de 0.1 km
                 // Atualizar o texto da descrição com o valor em Kms
-                textViewRadius.setText("Define a radius to find one place: \n" + distanceInKms + " Kms");
+                textViewRadius.setText("Define a radius to find one place: \n" + selectedRadius + " Kms");
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
@@ -122,15 +117,13 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
         catsList.add(new CategoryDomain("Food", "cat2"));
         catsList.add(new CategoryDomain("Culture", "cat3"));
         catsList.add(new CategoryDomain("Shopping", "cat4"));
-        catsList.add(new CategoryDomain("Landmark", "cat5"));
+        catsList.add(new CategoryDomain("Landmarks", "cat5"));
 
         recyclerViewCategory = view.findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         adapterCategory = new CategoryAdapter(catsList, this);
         recyclerViewCategory.setAdapter(adapterCategory);
-
     }
-
     @Override
     public void onCategoryDeselected(String category) {
         // Implementar a lógica de desselecionar uma categoria, se necessário
@@ -143,27 +136,22 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
         // Atualizar a categoria selecionada
         selectedCategory = category;
     }
-
     public void applyFilters() {
         // Coletar os valores dos filtros
-        String postcode = editTextPostcode.getText().toString();
+        String locationName = editTextLocationName.getText().toString(); // Renomeado de postcode
 
-        // Crie um Intent para a próxima atividade
-        Intent intent = new Intent(getActivity(), ListOfPointOfInterest.class);
-        intent.putExtra("latitude", latitude);
-        intent.putExtra("longitude", longitude);
-        intent.putExtra("postcode", postcode);
-        intent.putExtra("radius", selectedRadius);
-        intent.putExtra("category", selectedCategory);
-
-        // Iniciar a próxima atividade com os filtros selecionados
-        startActivity(intent);
+        // Aplica os filtros passando os dados de volta para a atividade principal
+        if (filterAppliedListener != null) {
+            filterAppliedListener.onFilterApplied(latitude, longitude, locationName, selectedRadius, selectedCategory);
+        }
 
         dismiss(); // Fecha o popup após aplicar o filtro
     }
 
-    // Método para atualizar as coordenadas exibidas no popup
     public void updateLocation(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+
         // Obter o nome da localização usando geocodificação reversa
         Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
         try {
@@ -177,14 +165,8 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
                     TextView textViewLocationName = getView().findViewById(R.id.textViewLocationName);
                     textViewLocationName.setText(String.format("Pick a location to visit:\n%s\nLatitude: %.6f\nLongitude: %.6f", cityName, latitude, longitude));
 
-                    // Verifica se o código postal está disponível e preenche automaticamente o EditText
-                    String postalCode = address.getPostalCode(); // Obtém o código postal
-                    if (postalCode != null && !postalCode.isEmpty()) {
-                        editTextPostcode.setText(postalCode);
-                    } else {
-                        // Se o código postal não estiver disponível, limpa o EditText
-                        editTextPostcode.setText("YYYY-YYY");
-                    }
+                    // Preencher automaticamente o EditText com o nome da cidade
+                    editTextLocationName.setText(cityName);
                 } else {
                     // Se a cidade não estiver disponível, exiba apenas as coordenadas
                     TextView textViewLocationName = getView().findViewById(R.id.textViewLocationName);
@@ -197,16 +179,21 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
     }
 
     public void setOnLocationSelectedListener(OnLocationSelectedListener listener) {
-        this.mListener = listener;
+        this.locationSelectedListener = listener;
+    }
+
+    public void setOnFilterAppliedListener(OnFilterAppliedListener listener) {
+        this.filterAppliedListener = listener;
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            mListener = (OnLocationSelectedListener) context;
+            filterAppliedListener = (OnFilterAppliedListener) context;
+            locationSelectedListener = (OnLocationSelectedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnLocationSelectedListener");
+            throw new ClassCastException(context.toString() + " must implement OnFilterAppliedListener and OnLocationSelectedListener");
         }
     }
 }
