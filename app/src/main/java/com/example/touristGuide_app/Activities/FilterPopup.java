@@ -76,9 +76,9 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Ajustar o valor mínimo para 100 metros
-                selectedRadius = (progress + 100) / 1000f; // Converter para Kms, mínimo de 0.1 km
+                selectedRadius = (progress + 100); //  1000f; // Converter para Kms, mínimo de 0.1 km
                 // Atualizar o texto da descrição com o valor em Kms
-                textViewRadius.setText("Define a radius to find one place: \n" + selectedRadius + " Kms");
+                textViewRadius.setText("Define a radius to find one place: \n" + selectedRadius/1000f + " kms");
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
