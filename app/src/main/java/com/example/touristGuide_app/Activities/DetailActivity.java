@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class DetailActivity extends AppCompatActivity {
-    private TextView titleTxt, locationTxt, bedTxt, guideTxt, wifiTxt, descriptionTxt, scoreTxt;
+    private TextView nameTxt, locationTxt, bedTxt, guideTxt, wifiTxt, aboutTxt, scoreTxt;
     private PopularDomain item;
     private ImageView picImg, backBtn;
     private Button btnBookNow;
@@ -43,30 +43,17 @@ public class DetailActivity extends AppCompatActivity {
         item = (PopularDomain) getIntent().getSerializableExtra("object");
         Toast.makeText(this, "userIdEP: "+item.getUserIdReq()+"\ncalendarIdEP"+item.getCalendarIdReq(), Toast.LENGTH_SHORT).show();
 
-        titleTxt.setText(item.getTitle());
+        nameTxt.setText(item.getName());
         scoreTxt.setText(""+ item.getScore());
         locationTxt.setText(item.getLocation());
         bedTxt.setText(item.getBed()+" Bed");
-        descriptionTxt.setText(item.getDescription());
+        aboutTxt.setText(item.getAbout());
         // Exiba a data do evento na descrição
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String eventDateStr = dateFormat.format(item.getEventDate()); // startDate
-        String descriptionWithDate = item.getDescription() + "\n\nEvent Date: " + eventDateStr;
-        descriptionTxt.setText(descriptionWithDate);
-        // String eventDateStartStr = dateFormat.format(item.getStartDateTime()); // startDate
-        // String eventDateEndStr = dateFormat.format(item.getEndDateTime()); // endDate
-        // String descriptionWithStartAndEndDate = item.getDescription() + "\n\nEvent Start Date: " + eventDateStartStr + "\n\nEvent End Date: " + eventDateEndStr;
-        // descriptionTxt.setText(descriptionWithStartAndEndDate);
-        if (item.isGuide()){
-            guideTxt.setText("Guide");
-        }else {
-            guideTxt.setText("No-Guide");
-        }
-        if(item.isWifi()){
-            wifiTxt.setText("WiFi");
-        }else {
-            wifiTxt.setText("No-WiFi");
-        }
+        String descriptionWithDate = item.getAbout() + "\n\nEvent Date: " + eventDateStr;
+        aboutTxt.setText(descriptionWithDate);
+
 
         int drawableResId = getResources().getIdentifier(item.getPic(),"drawable", getPackageName());
 
@@ -126,15 +113,16 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        titleTxt = findViewById(R.id.titleTxt);
-        locationTxt = findViewById(R.id.locationTxt);
-        bedTxt = findViewById(R.id.bedTxt);
-        guideTxt = findViewById(R.id.guideTxt);
-        wifiTxt = findViewById(R.id.wifiTxt);
-        descriptionTxt = findViewById(R.id.descriptionTxt);
+        nameTxt = findViewById(R.id.nameTxt);
+        
+        
+        aboutTxt = findViewById(R.id.aboutTxt);
         scoreTxt = findViewById(R.id.scoreTxt);
         picImg = findViewById(R.id.picImg);
+
+
         backBtn = findViewById(R.id.backBtn);
+
         btnBookNow = findViewById(R.id.btnBookNow);
     }
 }

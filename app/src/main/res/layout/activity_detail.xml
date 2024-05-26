@@ -42,7 +42,7 @@
                     app:srcCompat="@drawable/back_arrow" />
 
                 <ImageView
-                    android:id="@+id/favoriteIcon"
+                    android:id="@+id/favoritesIcon"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_marginEnd="32dp"
@@ -54,7 +54,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:id="@+id/titleTxt"
+                android:id="@+id/nameTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -78,15 +78,15 @@
                     android:id="@+id/imageView11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/marker2" />
+                    app:srcCompat="@drawable/phone" />
 
                 <TextView
-                    android:id="@+id/locationTxt"
+                    android:id="@+id/contactTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="location"
+                    android:text="Contact"
                     android:textColor="@color/black"
                     android:textSize="17sp" />
 
@@ -94,116 +94,143 @@
                     android:id="@+id/imageView13"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/star2" />
+                    app:srcCompat="@drawable/calendar" />
 
                 <TextView
-                    android:id="@+id/scoreTxt"
+                    android:id="@+id/startDateTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="4.8"
+                    android:text="07-04-2024"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+                <TextView
+                    android:id="@+id/imageView23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="-"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+                <TextView
+                    android:id="@+id/endDateTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="07-04-2024"
                     android:textColor="@color/black"
                     android:textSize="17sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
                 android:orientation="horizontal">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0333"
-                    android:background="@drawable/border_bg">
+                <TextView
+                    android:id="@+id/textView41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Organizer: "
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/imageView14"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/bed" />
-
-                    <TextView
-                        android:id="@+id/bedTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="2 bed"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView14"
-                        app:layout_constraintStart_toEndOf="@+id/imageView14"
-                        app:layout_constraintTop_toTopOf="@+id/imageView14" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                <TextView
+                    android:id="@+id/organizerTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="0333"
-                    android:background="@drawable/border_bg">
+                    android:layout_weight="1"
+                    android:text="Organization"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
 
-                    <ImageView
-                        android:id="@+id/guidePic"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/guide" />
+                <ImageView
+                    android:id="@+id/categoryEventImg"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
 
-                    <TextView
-                        android:id="@+id/guideTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="2 bed"
-                        app:layout_constraintBottom_toBottomOf="@+id/guidePic"
-                        app:layout_constraintStart_toEndOf="@+id/guidePic"
-                        app:layout_constraintTop_toTopOf="@+id/guidePic" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/cat1"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/textView31"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Participants"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="0dp"
-                    android:layout_height="55dp"
-                    android:layout_weight="0333"
-                    android:background="@drawable/border_bg">
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Maximum: "
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
 
-                    <ImageView
-                        android:id="@+id/wifiPic"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/wifi" />
+                <TextView
+                    android:id="@+id/currentParticipantsTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="12"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/textView51"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Current: "
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
 
-                    <TextView
-                        android:id="@+id/wifiTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="WiFi"
-                        app:layout_constraintBottom_toBottomOf="@+id/wifiPic"
-                        app:layout_constraintStart_toEndOf="@+id/wifiPic"
-                        app:layout_constraintTop_toTopOf="@+id/wifiPic" />
+                <TextView
+                    android:id="@+id/maxParticipantsTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="10"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView11"
+                android:id="@+id/textView21"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:layout_marginStart="32dp"
                 android:text="Description"
                 android:textColor="@color/black"
@@ -211,7 +238,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/descriptionTxt"
+                android:id="@+id/aboutTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"

@@ -12,12 +12,19 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.touristGuide_app.Adapters.CategoryAdapter;
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.touristGuide_app.Adapters.PopularAdapter;
-import com.example.touristGuide_app.Domains.CategoryDomain;
+import com.example.touristGuide_app.Domains.PointOfInterestDomain;
 import com.example.touristGuide_app.Domains.PopularDomain;
 import com.example.touristGuide_app.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,12 +32,14 @@ import java.util.Date;
 public class ListOfEvents extends AppCompatActivity implements OnLocationSelectedListener {
     private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
     private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
+    String serverIp;
     private String userId = "0";
     private int userIdReq = 0;
     private int calendarIdReq = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        serverIp = getString(R.string.ip);
         setContentView(R.layout.list_of_events);
 
         Intent intent = getIntent();
@@ -65,68 +74,8 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
                 onFilterButtonClick(v);
             }
         });
-        ArrayList<PopularDomain> items = new ArrayList<>();
-        // Initialize adapters and RecyclerViews for Best Stared and Oldest Places
-        ArrayList<PopularDomain> itemsBestStared = new ArrayList<>();
-        ArrayList<PopularDomain> itemsOldest = new ArrayList<>();
-
-        ArrayList<Date> dates = new ArrayList<>();
-
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.set(2024, Calendar.APRIL, 23);
-        Date date1 = calendar1.getTime();
-        dates.add(date1);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(2024, Calendar.APRIL, 25);
-        Date date2 = calendar2.getTime();
-        dates.add(date2);
-        Calendar calendar3 = Calendar.getInstance();
-        calendar3.set(2024, Calendar.APRIL, 26);
-        Date date3 = calendar3.getTime();
-        dates.add(date3);
-
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+ "embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 2, true, 4.8, "pic1", true, 1000, date1, userId, userIdReq, calendarIdReq));
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. ",
-                 1, false, 3, "pic2", false, 25000, date2, userId, userIdReq, calendarIdReq));
-        items.add(new PopularDomain("Mar caible, avendia lago", "Miami beach", "This 2 bed/ 1 bath home boasts an enormous, "+"open-living plan, accented by striking "+
-                "architectural features and high-end finishes."+"Feel inspired by open sight lines that"+"embrace the outdoors, crowned by stunning"+"coffered ceilings. "
-                , 4, true, 5, "pic3", true, 30000, date3, userId, userIdReq, calendarIdReq));
-
-        // Add sample data for Best Stared
-        itemsBestStared.add(new PopularDomain("Best Stared Place 1", "City A", "Description", 5, true, 4.8, "pic1", true, 1000, date3, userId, userIdReq, calendarIdReq));
-        itemsBestStared.add(new PopularDomain("Best Stared Place 2", "City B", "Description", 4, true, 4.5, "pic2", true, 1500, date2, userId, userIdReq, calendarIdReq));
-
-        // Add sample data for Oldest Places
-        itemsOldest.add(new PopularDomain("Oldest Place 1", "City C", "Description", 3, true, 4.0, "pic3", true, 2000, date1, userId, userIdReq, calendarIdReq));
-        itemsOldest.add(new PopularDomain("Oldest Place 2", "City D", "Description", 2, true, 3.5, "pic4", true, 2500, date2, userId, userIdReq, calendarIdReq));
-
-        for (int i = 0; i < items.size(); i++) {
-            // Obter a data correspondente ao índice do loop
-            Date eventDate = dates.get(i);
-            items.get(i).setEventDate(eventDate);
-        }
-
-        // Set up RecyclerView and adapter for Popular Places
-        recyclerViewPopular=findViewById(R.id.viewPop);
-        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterPopular=new PopularAdapter(items);
-        recyclerViewPopular.setAdapter(adapterPopular);
-
-        // Set up RecyclerView and adapter for Best Stared
-        recyclerViewBestStared = findViewById(R.id.viewBestStared);
-        recyclerViewBestStared.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterBestStared = new PopularAdapter(itemsBestStared);
-        recyclerViewBestStared.setAdapter(adapterBestStared);
-
-        // Set up RecyclerView and adapter for Oldest Places
-        recyclerViewOldest = findViewById(R.id.viewOldest);
-        recyclerViewOldest.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterOldest = new PopularAdapter(itemsOldest);
-        recyclerViewOldest.setAdapter(adapterOldest);
-
+        //////////////////////////// EVENTs
+        fetchEventsFromGraphQL();
         ////////////////////////////Person Menu Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +91,25 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
                 startActivity(intent);
             }
         });
+    }
+    private void initRecyclerEVENTsView(ArrayList<PopularDomain> events) {
+        // Configurar RecyclerViews e Adapters para os diferentes tipos de eventos
+        recyclerViewPopular = findViewById(R.id.viewPop);
+        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterPopular = new PopularAdapter(events);
+        recyclerViewPopular.setAdapter(adapterPopular);
+
+        // Aqui você pode configurar outros RecyclerViews, se necessário
+        // Exemplo para recyclerViewBestStared
+        recyclerViewBestStared = findViewById(R.id.viewBestStared);
+        recyclerViewBestStared.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterBestStared = new PopularAdapter(events); // Adapte conforme necessário
+        recyclerViewBestStared.setAdapter(adapterBestStared);
+        // Exemplo para recyclerViewOldest
+        recyclerViewOldest = findViewById(R.id.viewOldest);
+        recyclerViewOldest.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        adapterOldest = new PopularAdapter(events); // Adapte conforme necessário
+        recyclerViewOldest.setAdapter(adapterOldest);
     }
     public void onFilterButtonClick(View view) {
         FilterPopup filterPopup = new FilterPopup();
@@ -176,6 +144,77 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
             }
         }
     }
-    
+
+    private void fetchEventsFromGraphQL() {
+        JSONObject jsonBody = new JSONObject();
+        try {
+            String query = "query findEvents { events { _id name organizer category contact startdate enddate about price currency maxparticipants currentparticipants favorites pointofinterestid pointofinterest { _id name locationName longitude latitude street postcode description category thumbnail } } }";
+            jsonBody.put("query", query);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(ListOfEvents.this, "Erro ao enviar o request JSON", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://" + serverIp + "/e1/events?limit=25&offset=0", jsonBody,
+                response -> {
+                    try {
+                        if (response.has("errors")) {
+                            JSONArray errors = response.getJSONArray("errors");
+                            if (errors.length() > 0) {
+                                String errorMessage = errors.getJSONObject(0).getString("message");
+                                runOnUiThread(() -> Toast.makeText(ListOfEvents.this, errorMessage, Toast.LENGTH_SHORT).show());
+                                return;
+                            }
+                        }
+
+                        JSONArray eventsArray = response.getJSONObject("data").getJSONArray("events");
+                        ArrayList<PopularDomain> events = new ArrayList<>();
+                        for (int i = 0; i < eventsArray.length(); i++) {
+                            JSONObject eventObject = eventsArray.getJSONObject(i);
+                            String id = eventObject.getString("_id");
+                            String name = eventObject.getString("name");
+                            String organizer = eventObject.getString("organizer");
+                            String category = eventObject.getString("category");
+                            String contact = eventObject.getString("contact");
+                            Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(eventObject.getString("startdate"));
+                            Date endDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(eventObject.getString("enddate"));
+                            String about = eventObject.getString("about");
+                            double price = eventObject.getDouble("price");
+                            String currency = eventObject.getString("currency");
+                            int maxParticipants = eventObject.getInt("maxparticipants");
+                            int currentParticipants = eventObject.getInt("currentparticipants");
+                            int favorites = eventObject.getInt("favorites");
+                            String poiId = eventObject.getString("pointofinterestid");
+
+                            JSONObject poiObject = eventObject.getJSONObject("pointofinterest");
+                            PointOfInterestDomain pointOfInterest = new PointOfInterestDomain(
+                                    poiObject.getString("_id"),
+                                    poiObject.getString("name"),
+                                    poiObject.getString("locationName"),
+                                    poiObject.getDouble("latitude"),
+                                    poiObject.getDouble("longitude"),
+                                    poiObject.optString("street"),
+                                    poiObject.optString("postcode"),
+                                    poiObject.getString("description"),
+                                    poiObject.getString("category"),
+                                    poiObject.getString("thumbnail")
+                            );
+
+                            events.add(new PopularDomain(id, name, organizer, category, contact, startDate, endDate, about, price, currency, maxParticipants, currentParticipants, favorites, poiId, pointOfInterest, "pic1"));
+                        }
+
+                        runOnUiThread(() -> initRecyclerEVENTsView(events));
+                    } catch (JSONException | ParseException e) {
+                        e.printStackTrace();
+                        Toast.makeText(ListOfEvents.this, "Erro ao processar resposta JSON", Toast.LENGTH_SHORT).show();
+                    }
+                }, error -> {
+            Toast.makeText(ListOfEvents.this, "Erro na solicitação: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+
 
 }

@@ -1,114 +1,174 @@
 package com.example.touristGuide_app.Domains;
-
+import com.google.android.gms.maps.model.PointOfInterest;
 
 import java.io.Serializable;
 import java.util.Date;
 
 public class PopularDomain implements Serializable {
-    private String title;
-    private String location;
-    private String description;
-    private int bed;
-    private boolean guide;
-    private double score;
-    private String pic;
-    private boolean wifi;
-    private int price;
-    private Date eventDate;
-    private String userId;
-    private int userIdReq;
-    private int calendarIdReq;
-    public PopularDomain(String title, String location, String description, int bed, boolean guide, double score, String pic, boolean wifi, int price, Date eventDate, String userId, int userIdReq, int calendarIdReq) {
-        this.title = title;
-        this.location = location;
-        this.description = description;
-        this.bed = bed;
-        this.guide = guide;
-        this.score = score;
-        this.pic = pic;
-        this.wifi = wifi;
+    private String id;
+    private String name;
+    private String organizer;
+    private String category;
+    private String contact;
+    private Date startDate;
+    private Date endDate;
+    private String about;
+    private double price;
+    private String currency;
+    private int maxParticipants;
+    private int currentParticipants;
+    private int favorites;
+    private String pointOfInterestId;
+    private PointOfInterestDomain pointOfInterest;
+    private String thumbnailEvent;
+
+    public PopularDomain(String id, String name, String organizer, String category, String contact, Date startDate,
+                         Date endDate, String about, double price, String currency, int maxParticipants,
+                         int currentParticipants, int favorites, String pointOfInterestId, PointOfInterestDomain pointOfInterest, String thumbnailEvent) {
+        this.id = id;
+        this.name = name;
+
+        this.organizer = organizer;
+        this.category = category;
+        this.contact = contact;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.about = about;
         this.price = price;
-        this.eventDate = eventDate;
-        this.userId = userId;
-        this.userIdReq = userIdReq;
-        this.calendarIdReq = calendarIdReq;
+        this.currency = currency;
+        this.maxParticipants = maxParticipants;
+        this.currentParticipants = currentParticipants;
+        this.favorites = favorites;
+        this.pointOfInterestId = pointOfInterestId;
+        this.pointOfInterest = pointOfInterest;
+        this.thumbnailEvent = thumbnailEvent;
     }
-    public int getUserIdReq() {
-        return userIdReq;
+
+    public String getId() {
+        return id;
     }
-    public void setUserIdReq(int userIdReq) {
-        this.userIdReq = userIdReq;
+
+    public void setId(String id) {
+        this.id = id;
     }
-    public int getCalendarIdReq() {
-        return calendarIdReq;
+
+    public String getName() {
+        return name;
     }
-    public void setCalendarIdReq(int calendarIdReq) {
-        this.calendarIdReq = calendarIdReq;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    public String getUserId() {
-        return userId;
+
+    public String getOrganizer() {
+        return organizer;
     }
-    public void setUserId(String userId) {
-        this.userId = userId;
+
+    public void setOrganizer(String organizer) {
+        this.organizer = organizer;
     }
-    public String getTitle() {
-        return title;
+
+    public String getCategory() {
+        return category;
     }
-    public void setTitle(String title) {
-        this.title = title;
+
+    public void setCategory(String category) {
+        this.category = category;
     }
-    public String getLocation() {
-        return location;
+
+    public String getContact() {
+        return contact;
     }
-    public void setLocation(String location) {
-        this.location = location;
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
-    public String getDescription() {
-        return description;
+
+    public Date getStartDate() {
+        return startDate;
     }
-    public void setDescription(String description) {
-        this.description = description;
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
-    public int getBed() {
-        return bed;
+
+    public Date getEndDate() {
+        return endDate;
     }
-    public void setBed(int bed) {
-        this.bed = bed;
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
-    public boolean isGuide() {
-        return guide;
+
+    public String getAbout() {
+        return about;
     }
-    public void setGuide(boolean guide) {
-        this.guide = guide;
+
+    public void setAbout(String about) {
+        this.about = about;
     }
-    public double getScore() {
-        return score;
-    }
-    public void setScore(double score) {
-        this.score = score;
-    }
-    public String getPic() {
-        return pic;
-    }
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
-    public boolean isWifi() {
-        return wifi;
-    }
-    public void setWifi(boolean wifi) {
-        this.wifi = wifi;
-    }
-    public int getPrice() {
+
+    public double getPrice() {
         return price;
     }
-    public void setPrice(int price) {
+
+    public void setPrice(double price) {
         this.price = price;
     }
-    public Date getEventDate() {
-        return eventDate;
+
+    public String getCurrency() {
+        return currency;
     }
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate;
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public int getMaxParticipants() {
+        return maxParticipants;
+    }
+
+    public void setMaxParticipants(int maxParticipants) {
+        this.maxParticipants = maxParticipants;
+    }
+
+    public int getCurrentParticipants() {
+        return currentParticipants;
+    }
+
+    public void setCurrentParticipants(int currentParticipants) {
+        this.currentParticipants = currentParticipants;
+    }
+
+    public int getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(int favorites) {
+        this.favorites = favorites;
+    }
+
+    public String getPointOfInterestId() {
+        return pointOfInterestId;
+    }
+
+    public void setPointOfInterestId(String pointOfInterestId) {
+        this.pointOfInterestId = pointOfInterestId;
+    }
+
+    public PointOfInterestDomain getPointOfInterest() {
+        return pointOfInterest;
+    }
+
+    public void setPointOfInterest(PointOfInterestDomain pointOfInterest) {
+        this.pointOfInterest = pointOfInterest;
+    }
+
+    public String getThumbnailEvent() {
+        return thumbnailEvent;
+    }
+
+    public void setThumbnailEvent(String thumbnailEvent) {
+        this.thumbnailEvent = thumbnailEvent;
     }
 }
