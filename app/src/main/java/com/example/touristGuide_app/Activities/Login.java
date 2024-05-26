@@ -30,7 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
-
+    String serverIp;
     User user;
     FirebaseAuth firebaseAuth;
     private EditText passwordEditText, mailEditText;
@@ -44,12 +44,10 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-
+        serverIp = getString(R.string.ip);
         firebaseAuth = FirebaseAuth.getInstance();
-
         mailEditText = findViewById(R.id.mail);
         passwordEditText = findViewById(R.id.password);
-
         findViewById(R.id.loginbtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,31 +55,25 @@ public class Login extends AppCompatActivity {
                 if (validateFields()) {
                     String userMail = mailEditText.getText().toString();
                     String userPassword = passwordEditText.getText().toString();
-        
                     // Crie um novo objeto User com as informações de entrada
                     user = new User();
                     user.setMail(userMail);
                     user.setPwd(userPassword);
-
                     // Verifique se o usuário já está autenticado
-
                     sendLoginRequest(userMail, userPassword);
                     // signupOrLogin(userMail, userPassword);
-
                 }
             }
         });
-
         findViewById(R.id.btnGoogle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Redirecionar para a página de login do Google
-                String googleLoginUrl = "http://srv2-deti.ua.pt/login";
+                String googleLoginUrl = "http://"+serverIp+"/login";
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleLoginUrl));
                 startActivityForResult(intent, GOOGLE_LOGIN_REQUEST_CODE);
             }
         });
-
         // Configurar o clique no ícone do olho
         passwordEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.baseline_remove_red_eye_24, 0);
         passwordEditText.setOnTouchListener(new View.OnTouchListener() {
@@ -101,23 +93,22 @@ public class Login extends AppCompatActivity {
     // Método para fazer login ou se inscrever
     private void signupOrLogin(String email, String password, int userIdReq, int calendarIdReq) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Login bem-sucedido, vá para a próxima tela (MainActivity)
-                            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                            if (currentUser != null) {
-                                openMainRoom(currentUser.getUid(), userIdReq, calendarIdReq);
-                            }
-                        } else {
-                            // Se o login falhar, tente criar uma nova conta
-                            signup(email, password, userIdReq, calendarIdReq);
-                        }
+        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Login bem-sucedido, vá para a próxima tela (MainActivity)
+                    FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                    if (currentUser != null) {
+                        openMainRoom(currentUser.getUid(), userIdReq, calendarIdReq);
                     }
-                });
+                } else {
+                    // Se o login falhar, tente criar uma nova conta
+                    signup(email, password, userIdReq, calendarIdReq);
+                }
+            }
+        });
     }
-
     // Método para criar uma nova conta
     private void signup(String email, String password, int userIdReq, int calendarIdReq) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -140,20 +131,16 @@ public class Login extends AppCompatActivity {
     private boolean validateFields() {
         String mail = mailEditText.getText().toString();
         String pwd = passwordEditText.getText().toString();
-
         if (TextUtils.isEmpty(mail)) {
             Toast.makeText(this, "Mail is missing!!", Toast.LENGTH_SHORT).show();
             return false;
         }
-
         if (TextUtils.isEmpty(pwd)) {
             Toast.makeText(this, "Password is missing!!", Toast.LENGTH_SHORT).show();
             return false;
         }
-
         return true;
     }
-
     // Método para alternar a visibilidade da senha
     private void togglePasswordVisibility() {
         if (isPasswordVisible) {
@@ -166,7 +153,6 @@ public class Login extends AppCompatActivity {
         passwordEditText.setSelection(passwordEditText.getText().length());
     }
 //////////////////////////// GOOGLE ////////////////////////////
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -189,7 +175,7 @@ public class Login extends AppCompatActivity {
             e.printStackTrace();
         }
         // Enviar a solicitação POST para o servidor
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://srv2-deti.ua.pt/login", jsonBody,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://"+serverIp+"/login", jsonBody,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

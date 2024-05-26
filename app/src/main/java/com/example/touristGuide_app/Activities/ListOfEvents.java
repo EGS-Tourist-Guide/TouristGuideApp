@@ -32,9 +32,27 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_of_events);
-        userId = getIntent().getStringExtra("userId");
-        userIdReq = getIntent().getIntExtra("userIdReq",0);
-        calendarIdReq = getIntent().getIntExtra("calendarIdReq",0);
+
+        Intent intent = getIntent();
+        String userId = intent.getStringExtra("userId");
+        int userIdReq = intent.getIntExtra("userIdReq", 0);
+        int calendarIdReq = intent.getIntExtra("calendarIdReq", 0);
+        String poiId = intent.getStringExtra("poiId");
+        String poiName = intent.getStringExtra("poiName");
+        String poiLocationName = intent.getStringExtra("poiLocationName");
+        double poiLatitude = intent.getDoubleExtra("poiLatitude", 0);
+        double poiLongitude = intent.getDoubleExtra("poiLongitude", 0);
+        String poiStreet = intent.getStringExtra("poiStreet");
+        String poiPostcode = intent.getStringExtra("poiPostcode");
+        String poiDescription = intent.getStringExtra("poiDescription");
+        String poiCategory = intent.getStringExtra("poiCategory");
+        String poiThumbnail = intent.getStringExtra("poiThumbnail");
+
+        System.out.println("userId: " + userId + " userIdReq: " + userIdReq + " calendarIdReq: " + calendarIdReq +
+                " poiId: " + poiId + " poiName: " + poiName + " poiLocationName: " + poiLocationName +
+                " poiLatitude: " + poiLatitude + " poiLongitude: " + poiLongitude + " poiStreet: " + poiStreet +
+                " poiPostcode: " + poiPostcode + " poiDescription: " + poiDescription + " poiCategory: " + poiCategory +
+                " poiThumbnail: " + poiThumbnail);
 
         initRecyclerView();
     }
@@ -109,20 +127,6 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         adapterOldest = new PopularAdapter(itemsOldest);
         recyclerViewOldest.setAdapter(adapterOldest);
 
-        ////////////////////////////CATEGORIAS
-        /*
-        ArrayList<CategoryDomain> catsList = new ArrayList<>();
-        catsList.add(new CategoryDomain("Beaches", "cat1"));
-        catsList.add(new CategoryDomain("Museums", "cat2"));
-        catsList.add(new CategoryDomain("Forest", "cat3"));
-        catsList.add(new CategoryDomain("Festivals", "cat4"));
-        catsList.add(new CategoryDomain("Camps", "cat5"));
-        
-        recyclerViewCategory=findViewById(R.id.viewCat);
-        recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterCategory = new CategoryAdapter(catsList);
-        recyclerViewCategory.setAdapter(adapterCategory);
-        */
         ////////////////////////////Person Menu Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {

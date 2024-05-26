@@ -19,16 +19,20 @@ import java.util.ArrayList;
 
 public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterestAdapter.ViewHolder> {
     ArrayList<PointOfInterestDomain> items;
-    public PointOfInterestAdapter(ArrayList<PointOfInterestDomain> items) {
+    private String userId;
+    private int userIdReq;
+    private int calendarIdReq;
+
+    public PointOfInterestAdapter(ArrayList<PointOfInterestDomain> items, String userId, int userIdReq, int calendarIdReq) {
         this.items = items;
+        this.userId = userId;
+        this.userIdReq = userIdReq;
+        this.calendarIdReq = calendarIdReq;
     }
-
-
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        System.out.println("Chegou ao adapter do POI");
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_poi, parent, false);
         return new ViewHolder(inflate);
     }
@@ -57,9 +61,23 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
                     .into(holder.thumbnail);
         }
 
+        // AqUI
+
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), ListOfEvents.class);
-            intent.putExtra("poi", item);
+            intent.putExtra("userId", userId);
+            intent.putExtra("userIdReq", userIdReq);
+            intent.putExtra("calendarIdReq", calendarIdReq);
+            intent.putExtra("poiId", item.getId());
+            intent.putExtra("poiName", item.getName());
+            intent.putExtra("poiLocationName", item.getLocationName());
+            intent.putExtra("poiLatitude", item.getLatitude());
+            intent.putExtra("poiLongitude", item.getLongitude());
+            intent.putExtra("poiStreet", item.getStreet());
+            intent.putExtra("poiPostcode", item.getPostcode());
+            intent.putExtra("poiDescription", item.getDescription());
+            intent.putExtra("poiCategory", item.getCategory());
+            intent.putExtra("poiThumbnail", item.getThumbnail());
             holder.itemView.getContext().startActivity(intent);
         });
     }
@@ -70,7 +88,6 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameTxt, locationTxt, descriptionTxt, categoryOfPoiTxt;
         ImageView thumbnail;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTxt = itemView.findViewById(R.id.nameTxt);

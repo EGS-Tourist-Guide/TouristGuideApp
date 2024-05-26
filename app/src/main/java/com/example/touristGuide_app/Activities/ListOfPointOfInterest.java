@@ -41,6 +41,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
     private PointOfInterestAdapter adapterPoi;
     private RecyclerView recyclerViewCategory;
     private EditText searchBarMain;
+    String serverIp;
     private String userId = "0";
     private int userIdReq = 0, calendarIdReq = 0;
     private String selectedCategory = null; // Categoria selecionada
@@ -51,30 +52,26 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_of_pois);
+        serverIp = getString(R.string.ip);
         userId = getIntent().getStringExtra("userId");
         userIdReq = getIntent().getIntExtra("userIdReq",0);
         calendarIdReq = getIntent().getIntExtra("calendarIdReq",0);
-
         searchBarMain = findViewById(R.id.search_bar_main);
-
         searchBarMain.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // Não é necessário implementar
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String searchText = s.toString();
                 fetchPOIsFromGraphQL(selectedCategory, selectedLatitude, selectedLongitude, selectedRadius, searchText);
             }
-
             @Override
             public void afterTextChanged(Editable s) {
                 // Não é necessário implementar
             }
         });
-
         initRecyclerView();
     }
     private void initRecyclerView(){
@@ -86,24 +83,20 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                 onFilterButtonClick(v);
             }
         });
-
-        ////////////////////////////POIS
+        //////////////////////////// POIS
         fetchPOIsFromGraphQL(null, 0, 0, 0, null);
-
-        ////////////////////////////CATEGORIAS
+        //////////////////////////// CATEGORIAS
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
         catsList.add(new CategoryDomain("Nature", "cat1"));
         catsList.add(new CategoryDomain("Food", "cat2"));
         catsList.add(new CategoryDomain("Culture", "cat3"));
         catsList.add(new CategoryDomain("Shopping", "cat4"));
         catsList.add(new CategoryDomain("Landmarks", "cat5"));
-        
         recyclerViewCategory=findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapterCategory = new CategoryAdapter(catsList, this);
         recyclerViewCategory.setAdapter(adapterCategory);
-
-        ////////////////////////////Person Menu Icon
+        //////////////////////////// Person Menu Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,12 +107,10 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                 intent.putExtra("userId", userId);
                 intent.putExtra("userIdReq", userIdReq);
                 intent.putExtra("calendarIdReq", calendarIdReq);
-
                 startActivity(intent);
             }
         });
     }
-
     public void onFilterButtonClick(View view) {
         FilterPopup filterPopup = new FilterPopup();
         // Defina este MainActivity como o listener para receber as coordenadas selecionadas
@@ -137,7 +128,6 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         selectedLocationName = locationName;
         System.out.println("Latitude: " + latitude + ", Longitude: " + longitude + ", Location Name: " + locationName + ", Radius: " + radius + ", Category: " + category);
         Toast.makeText(this, "Filtros aplicados!", Toast.LENGTH_SHORT).show();
-
         // Atualize os POIs com base nos filtros aplicados
         fetchPOIsFromGraphQL(selectedCategory, selectedLatitude, selectedLongitude, selectedRadius, selectedLocationName);
     }
@@ -159,7 +149,6 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
             double latitude = data.getDoubleExtra("latitude", 0);
             double longitude = data.getDoubleExtra("longitude", 0);
             System.out.println("Main activity onActivityResult Latitude: " + latitude + ", Longitude: " + longitude);
-
             // Obtém uma referência para o FilterPopup atualmente exibido
             FilterPopup filterPopup = (FilterPopup) getSupportFragmentManager().findFragmentByTag("filter_popup");
             // Verifica se o popup está sendo exibido antes de atualizar as coordenadas
@@ -169,10 +158,11 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         }
     }
     private void initRecyclerPOIView(ArrayList<PointOfInterestDomain> pois) {
+        // AQUI É QUE MOSTRA CADA UM QUANDO CLICO AQUI ABRE UMA NOVA PAGINA
         // Configura o RecyclerView e o adaptador após receber os POIs
         recyclerViewPoi = findViewById(R.id.recyclerViewPoi);
         recyclerViewPoi.setLayoutManager(new LinearLayoutManager(this));
-        adapterPoi = new PointOfInterestAdapter(pois);
+        adapterPoi = new PointOfInterestAdapter(pois, userId, userIdReq, calendarIdReq);
         recyclerViewPoi.setAdapter(adapterPoi);
         // Aqui você pode adicionar prints para verificar se os POIs foram recebidos corretamente
         Log.d("ListOfPointOfInterest", "POIs recebidos: " + pois.size());
@@ -214,8 +204,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
             Toast.makeText(ListOfPointOfInterest.this, "Erro ao enviar o request JSON", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://srv2-deti.ua.pt/graphql", jsonBody,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://"+serverIp+"/graphql", jsonBody,
                 response -> {
                     try {
                         if (response.has("errors")) {
@@ -226,12 +215,11 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                                 return;
                             }
                         }
-
                         JSONArray poiArray = response.getJSONObject("data").getJSONArray("searchPointsOfInterest");
                         ArrayList<PointOfInterestDomain> pois = new ArrayList<>();
                         for (int i = 0; i < poiArray.length(); i++) {
                             JSONObject poiObject = poiArray.getJSONObject(i);
-                            String id = poiObject.getString("_id");
+                            String id_poi = poiObject.getString("_id");
                             String name = poiObject.getString("name");
                             String locationNameResponse = poiObject.getString("locationName");
                             JSONObject location = poiObject.getJSONObject("location");
@@ -242,7 +230,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                             String description = poiObject.getString("description");
                             String categoryReceived = poiObject.getString("category");
                             String thumbnail = poiObject.getString("thumbnail");
-                            pois.add(new PointOfInterestDomain(id, name, locationNameResponse, latitudeResponse, longitudeResponse, street, postcode, description, categoryReceived, thumbnail));
+                            pois.add(new PointOfInterestDomain(id_poi, name, locationNameResponse, latitudeResponse, longitudeResponse, street, postcode, description, categoryReceived, thumbnail));
                         }
                         runOnUiThread(() -> initRecyclerPOIView(pois));
                     } catch (JSONException e) {
@@ -252,10 +240,8 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                 }, error -> {
             Toast.makeText(ListOfPointOfInterest.this, "Erro na solicitação: " + error.getMessage(), Toast.LENGTH_SHORT).show();
         });
-
         RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-
     private void showNoResultsPopup(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Sem Resultados");
@@ -263,5 +249,4 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         builder.setPositiveButton("OK", null);
         builder.show();
     }
-
 }

@@ -1,5 +1,4 @@
 package com.example.touristGuide_app.Adapters;
-
 import static com.example.touristGuide_app.Activities.CalendarEmpty.savingDatesByID;
 
 import android.graphics.Color;
@@ -21,17 +20,14 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
     private final ArrayList<LocalDate> days;
     private final OnItemListener onItemListener;
-
     public CalendarAdapter(ArrayList<LocalDate> days, OnItemListener onItemListener)
     {
         this.days = days;
         this.onItemListener = onItemListener;
     }
-
     @NonNull
     @Override
     public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -43,10 +39,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
             layoutParams.height = (int) (parent.getHeight() * 0.166666666);
         else // week view
             layoutParams.height = (int) parent.getHeight();
-
         return new CalendarViewHolder(view, onItemListener, days);
     }
-
     @Override
     public void onBindViewHolder(@NonNull CalendarViewHolder holder, int position)
     {
@@ -68,15 +62,11 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
             }
         }
     }
-
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return days.size();
     }
-
-    public interface  OnItemListener
-    {
+    public interface  OnItemListener {
         void onItemClick(int position, LocalDate date);
     }
 }
