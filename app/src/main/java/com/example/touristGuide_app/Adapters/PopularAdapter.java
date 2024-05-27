@@ -22,9 +22,15 @@ import java.util.ArrayList;
 
 public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.ViewHolder> {
     ArrayList<PopularDomain> items;
+    private String userId;
+    private int userIdReq;
+    private int calendarIdReq;
 
-    public PopularAdapter(ArrayList<PopularDomain> items) {
+    public PopularAdapter(ArrayList<PopularDomain> items, String userId, int userIdReq, int calendarIdReq) {
         this.items = items;
+        this.userId = userId;
+        this.userIdReq = userIdReq;
+        this.calendarIdReq = calendarIdReq;
     }
 
     @NonNull
@@ -36,13 +42,13 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull PopularAdapter.ViewHolder holder, int position) {
-        holder.titleTxt.setText(items.get(position).getTitle());
-        holder.locationTxt.setText(items.get(position).getLocation());
-        holder.scoreTxt.setText(""+items.get(position).getScore());
+        //holder.titleTxt.setText(items.get(position).getTitle());
+        //holder.locationTxt.setText(items.get(position).getLocation());
+        //holder.scoreTxt.setText(""+items.get(position).getScore());
 
-        int drawableResId=holder.itemView.getResources().getIdentifier(items.get(position).getPic(),"drawable", holder.itemView.getContext().getPackageName());
-        Glide.with(holder.itemView.getContext()).load(drawableResId)
-                .transform(new CenterCrop(), new GranularRoundedCorners(40,40,40,40)).into(holder.pic);
+        //int drawableResId=holder.itemView.getResources().getIdentifier(items.get(position).getPic(),"drawable", holder.itemView.getContext().getPackageName());
+        //Glide.with(holder.itemView.getContext()).load(drawableResId)
+        //        .transform(new CenterCrop(), new GranularRoundedCorners(40,40,40,40)).into(holder.pic);
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), DetailActivity.class);
