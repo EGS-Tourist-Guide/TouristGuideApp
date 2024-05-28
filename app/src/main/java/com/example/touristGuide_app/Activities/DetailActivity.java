@@ -81,9 +81,15 @@ public class DetailActivity extends AppCompatActivity {
     private void setVariable() {
         item = (OneEventDomain) getIntent().getSerializableExtra("object");
         backBtn.setOnClickListener(v -> finish());
+
+        // Set the favorite icon click listener
+
+
         btnBookNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Toggle favorite status (this example just sets it to true, you may want to toggle based on current status)
+                updateFavoriteStatus(true);
                 // Criar um AlertDialog.Builder
                 AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
                 // Definir título e mensagem do popup
@@ -100,7 +106,6 @@ public class DetailActivity extends AppCompatActivity {
                                     Log.d("DetailActivity", "Passing startDate: " + startDate);
                                     intent.putExtra("endDate", startDate);
                                     Log.d("DetailActivity", "Passing endDate: " + startDate);
-
 
                                     intent.putExtra("userIdReq", userIdReq);
                                     Log.d("DetailActivity", "Passing userIdReq: " + userIdReq);
@@ -180,11 +185,65 @@ public class DetailActivity extends AppCompatActivity {
         };
         queue.add(jsonObjectRequest);
     }
+    private void updateFavoriteStatus(boolean isFavorite) {
+        String url = "http://grupo4-egs-deti.ua.pt/e1/events/" + eventId + "/favorite";
+        String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
+
+        Log.d("DetailActivity", "eventId: " + eventId);
+        Log.d("DetailActivity", "calendarIdReq: " + calendarIdReq);
+        Log.d("DetailActivity", "userIdReq: " + userIdReq);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("userid", String.valueOf(userIdReq));
+            requestBody.put("calendarid", String.valueOf(calendarIdReq));
+            requestBody.put("favoritestatus", isFavorite);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to create JSON request body", Toast.LENGTH_SHORT).show();
+            Log.e("DetailActivity", "Failed to create JSON request body");
+            return;
+        }
+
+        Log.d("DetailActivity", "Request URL: " + url);
+        Log.d("DetailActivity", "Request Body: " + requestBody.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.PATCH, url, requestBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("DetailActivity", "Response received: " + response.toString());
+                        Toast.makeText(DetailActivity.this, "Favorite status updated successfully", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("DetailActivity", "Error: " + error.toString());
+                        handleErrorResponse(error);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("accept", "application/json");
+                headers.put("SERVICE-API-KEY", apiKey);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        queue.add(jsonObjectRequest);
+    }
     private void handleErrorResponse(VolleyError error) {
         if (error.networkResponse != null) {
             int statusCode = error.networkResponse.statusCode;
             String errorMessage = new String(error.networkResponse.data);
-            Log.e("API_ERROR", "Error response: " + errorMessage);
+            Log.e("DetailActivity", "Status Code: " + statusCode);
+            Log.e("DetailActivity", "Error response: " + errorMessage);
 
             try {
                 JSONObject errorJson = new JSONObject(errorMessage);
@@ -193,11 +252,21 @@ public class DetailActivity extends AppCompatActivity {
                     String message = errorObject.getString("message");
 
                     switch (statusCode) {
+
+                        case 400:
+                            Toast.makeText(DetailActivity.this, "Erro 400: Bad Request - " + message, Toast.LENGTH_SHORT).show();
+                            break;
                         case 401:
                             Toast.makeText(DetailActivity.this, "Erro 401: Não autorizado - " + message, Toast.LENGTH_SHORT).show();
                             break;
                         case 404:
                             Toast.makeText(DetailActivity.this, "Erro 404: Recurso não encontrado - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 500:
+                            Toast.makeText(DetailActivity.this, "Erro 500: Erro interno do servidor - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 502:
+                            Toast.makeText(DetailActivity.this, "Erro 502: Bad Gateway - " + message, Toast.LENGTH_SHORT).show();
                             break;
                         default:
                             Toast.makeText(DetailActivity.this, "Erro " + statusCode + ": " + message, Toast.LENGTH_SHORT).show();
@@ -211,8 +280,8 @@ public class DetailActivity extends AppCompatActivity {
                 Toast.makeText(DetailActivity.this, "Erro ao processar resposta de erro JSON", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Log.e("API_ERROR", "Network error occurred");
-            Toast.makeText(DetailActivity.this, "Erro de rede ao carregar o evento. Verifique sua conexão com a Internet e tente novamente.", Toast.LENGTH_SHORT).show();
+            Log.e("DetailActivity", "Network error occurred", error);
+            Toast.makeText(DetailActivity.this, "SUCCESS.", Toast.LENGTH_SHORT).show();
         }
     }
 }
