@@ -1,6 +1,7 @@
 package com.example.touristGuide_app.Adapters;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,22 +17,17 @@ import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
 import com.example.touristGuide_app.Activities.DetailActivity;
 import com.example.touristGuide_app.Domains.ListEventsDomain;
 import com.example.touristGuide_app.R;
-import com.example.touristGuide_app.Domains.ListEventsDomain;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ListEventsAdapter extends RecyclerView.Adapter<ListEventsAdapter.ViewHolder> {
     ArrayList<ListEventsDomain> items;
-    private String userId;
-    private int userIdReq;
-    private int calendarIdReq;
 
-    public ListEventsAdapter(ArrayList<ListEventsDomain> items, String userId, int userIdReq, int calendarIdReq) {
+    public ListEventsAdapter(ArrayList<ListEventsDomain> items) {
         this.items = items;
-        this.userId = userId;
-        this.userIdReq = userIdReq;
-        this.calendarIdReq = calendarIdReq;
     }
 
     @NonNull
@@ -48,37 +44,37 @@ public class ListEventsAdapter extends RecyclerView.Adapter<ListEventsAdapter.Vi
         holder.titleTxt.setText(event.getName());
         holder.organizerTxt.setText(event.getOrganizer());
         holder.aboutTxt.setText(event.getAbout());
-        holder.locationTxt.setText(event.getPointOfInterest().getLocationName()); // Usando o locationName
+        holder.locationTxt.setText(event.getPointOfInterest().getLocationName());
         holder.contactTxt.setText(event.getContact());
         holder.categoryOfPoiTxt.setText(event.getPointOfInterest().getCategory());
         holder.maxParticipantsTxt.setText(String.valueOf(event.getMaxParticipants()));
         holder.currentParticipantsTxt.setText(String.valueOf(event.getCurrentParticipants()));
-        holder.priceOfEventTxt.setText(String.valueOf(event.getPrice()) + event.getCurrency());
+        holder.priceOfEventTxt.setText(event.getCurrency() + " " + String.valueOf(event.getPrice()));
 
-        // Aqui você precisa carregar a imagem do thumbnail usando uma biblioteca como o Glide ou Picasso
-        Glide.with(holder.itemView.getContext()).load(event.getPointOfInterest().getThumbnail()).into(holder.thumbnailImg);
+        // Formatação das datas
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        holder.startDateTxt.setText(dateFormat.format(event.getStartDate()));
+        holder.endDateTxt.setText(dateFormat.format(event.getEndDate()));
 
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(holder.itemView.getContext(), DetailActivity.class);
-            intent.putExtra("event", event);
-            holder.itemView.getContext().startActivity(intent);
-        });
+        // Uso do Glide para carregar a imagem do thumbnail
+        Glide.with(holder.itemView.getContext())
+                .load(event.getPointOfInterest().getThumbnail())
+                .into(holder.thumbnailImg);
     }
-
 
     @Override
     public int getItemCount() {
         return items.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView titleTxt, organizerTxt, aboutTxt, locationTxt, contactTxt, categoryOfPoiTxt, maxParticipantsTxt, currentParticipantsTxt, priceOfEventTxt;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView titleTxt, organizerTxt, aboutTxt, locationTxt, contactTxt, categoryOfPoiTxt, maxParticipantsTxt, currentParticipantsTxt, priceOfEventTxt, startDateTxt, endDateTxt;
         ImageView thumbnailImg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTxt = itemView.findViewById(R.id.nameTxt);
-            organizerTxt = itemView.findViewById(R.id.organizerTxt);
+            organizerTxt = itemView.findViewById(R.id.organizer_txt);
             aboutTxt = itemView.findViewById(R.id.about_txt);
             locationTxt = itemView.findViewById(R.id.location_txt);
             contactTxt = itemView.findViewById(R.id.contact_txt);
@@ -86,6 +82,8 @@ public class ListEventsAdapter extends RecyclerView.Adapter<ListEventsAdapter.Vi
             maxParticipantsTxt = itemView.findViewById(R.id.max_participants_txt);
             currentParticipantsTxt = itemView.findViewById(R.id.current_participants_txt);
             priceOfEventTxt = itemView.findViewById(R.id.price_of_event_txt);
+            startDateTxt = itemView.findViewById(R.id.startDateTxt);
+            endDateTxt = itemView.findViewById(R.id.endDateTxt);
             thumbnailImg = itemView.findViewById(R.id.thumbnailImg);
         }
     }

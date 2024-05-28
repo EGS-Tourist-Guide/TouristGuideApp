@@ -1,7 +1,6 @@
 package com.example.touristGuide_app.Adapters;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,16 +67,7 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
             intent.putExtra("userId", userId);
             intent.putExtra("userIdReq", userIdReq);
             intent.putExtra("calendarIdReq", calendarIdReq);
-            intent.putExtra("poiId", item.getId());
-            intent.putExtra("poiName", item.getName());
-            intent.putExtra("poiLocationName", item.getLocationName());
-            intent.putExtra("poiLatitude", item.getLatitude());
-            intent.putExtra("poiLongitude", item.getLongitude());
-            intent.putExtra("poiStreet", item.getStreet());
-            intent.putExtra("poiPostcode", item.getPostcode());
-            intent.putExtra("poiDescription", item.getDescription());
-            intent.putExtra("poiCategory", item.getCategory());
-            intent.putExtra("poiThumbnail", item.getThumbnail());
+
             holder.itemView.getContext().startActivity(intent);
         });
     }

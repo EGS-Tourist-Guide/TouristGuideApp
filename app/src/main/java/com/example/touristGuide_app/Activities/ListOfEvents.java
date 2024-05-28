@@ -2,6 +2,7 @@ package com.example.touristGuide_app.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -30,55 +31,38 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 public class ListOfEvents extends AppCompatActivity implements OnLocationSelectedListener {
-    private RecyclerView.Adapter adapterPopular, adapterCategory, adapterBestStared, adapterOldest;
-    private RecyclerView recyclerViewPopular, recyclerViewCategory, recyclerViewBestStared, recyclerViewOldest;
-    String serverIp;
-    private String userId = "0";
-    private int userIdReq = 0;
-    private int calendarIdReq = 0;
+    private RecyclerView.Adapter adapterPopular;
+    private RecyclerView recyclerViewPopular;
+    private String serverIp;
+    private String userId;
+    private int userIdReq;
+    private int calendarIdReq;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        serverIp = getString(R.string.ip);
         setContentView(R.layout.list_of_events);
 
         Intent intent = getIntent();
-        String userId = intent.getStringExtra("userId");
-        int userIdReq = intent.getIntExtra("userIdReq", 0);
-        int calendarIdReq = intent.getIntExtra("calendarIdReq", 0);
+        userId = intent.getStringExtra("userId");
+        userIdReq = intent.getIntExtra("userIdReq", 0);
+        calendarIdReq = intent.getIntExtra("calendarIdReq", 0);
 
-        String poiId = intent.getStringExtra("poiId");
-        String poiName = intent.getStringExtra("poiName");
-        String poiLocationName = intent.getStringExtra("poiLocationName");
-        double poiLatitude = intent.getDoubleExtra("poiLatitude", 0);
-        double poiLongitude = intent.getDoubleExtra("poiLongitude", 0);
-        String poiStreet = intent.getStringExtra("poiStreet");
-        String poiPostcode = intent.getStringExtra("poiPostcode");
-        String poiDescription = intent.getStringExtra("poiDescription");
-        String poiCategory = intent.getStringExtra("poiCategory");
-        String poiThumbnail = intent.getStringExtra("poiThumbnail");
+        serverIp = getString(R.string.ip);
 
-        System.out.println("userId: " + userId + " userIdReq: " + userIdReq + " calendarIdReq: " + calendarIdReq +
-                " poiId: " + poiId + " poiName: " + poiName + " poiLocationName: " + poiLocationName +
-                " poiLatitude: " + poiLatitude + " poiLongitude: " + poiLongitude + " poiStreet: " + poiStreet +
-                " poiPostcode: " + poiPostcode + " poiDescription: " + poiDescription + " poiCategory: " + poiCategory +
-                " poiThumbnail: " + poiThumbnail);
-
+        System.out.println("userId: " + userId + " userIdReq: " + userIdReq + " calendarIdReq: " + calendarIdReq);
         initRecyclerView();
+        Log.d("API_RESPONSE", "passou aqui3: " );
     }
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         //////////////FILTROS
         ConstraintLayout filterLayout = findViewById(R.id.btnFiltros);
-        filterLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onFilterButtonClick(v);
-            }
-        });
-        //////////////////////////// EVENTs
-        fetchEventsFromAPI();
+        filterLayout.setOnClickListener(this::onFilterButtonClick);
         ////////////////////////////Person Menu Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {
@@ -90,17 +74,18 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
                 intent.putExtra("userId", userId);
                 intent.putExtra("userIdReq", userIdReq);
                 intent.putExtra("calendarIdReq", calendarIdReq);
-
                 startActivity(intent);
             }
         });
+        //////////////////////////// EVENTs
+        fetchEventsFromAPI();
     }
     private void initRecyclerEVENTsView(ArrayList<ListEventsDomain> events) {
-        // Configurar RecyclerViews e Adapters para os diferentes tipos de eventos
         recyclerViewPopular = findViewById(R.id.viewEvent);
-        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterPopular = new ListEventsAdapter(events, userId, userIdReq, calendarIdReq);
+        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
+        adapterPopular = new ListEventsAdapter(events);
         recyclerViewPopular.setAdapter(adapterPopular);
+        Log.d("API_RESPONSE", "RecyclerView initialized with events: " + events.size());
     }
     public void onFilterButtonClick(View view) {
         FilterPopup filterPopup = new FilterPopup();
@@ -126,7 +111,6 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
             double latitude = data.getDoubleExtra("latitude", 0);
             double longitude = data.getDoubleExtra("longitude", 0);
             System.out.println("Main activity onActivityResult Latitude: " + latitude + ", Longitude: " + longitude);
-
             // Obtém uma referência para o FilterPopup atualmente exibido
             FilterPopup filterPopup = (FilterPopup) getSupportFragmentManager().findFragmentByTag("filter_popup");
             // Verifica se o popup está sendo exibido antes de atualizar as coordenadas
@@ -135,25 +119,38 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
             }
         }
     }
-
     private void fetchEventsFromAPI() {
         String url = "http://" + serverIp + "/e1/events?limit=25&offset=0";
-        String authToken = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
+        String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
+
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
-                        // Convertendo a resposta para JSONArray diretamente
                         JSONArray eventsArray = response;
                         ArrayList<ListEventsDomain> events = new ArrayList<>();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
                         for (int i = 0; i < eventsArray.length(); i++) {
                             JSONObject eventObject = eventsArray.getJSONObject(i);
+
+                            // Extract and parse the data from JSON
                             String id = eventObject.getString("_id");
                             String name = eventObject.getString("name");
                             String organizer = eventObject.getString("organizer");
                             String category = eventObject.getString("category");
                             String contact = eventObject.getString("contact");
-                            Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(eventObject.getString("startdate")); // Ajustando o formato da data
-                            Date endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(eventObject.getString("enddate")); // Ajustando o formato da data
+
+                            Date startDate = null;
+                            Date endDate = null;
+                            try {
+                                startDate = dateFormat.parse(eventObject.getString("startdate"));
+                                endDate = dateFormat.parse(eventObject.getString("enddate"));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                                Log.e("DATE_FORMAT_ERROR", "Erro ao analisar a data", e);
+                                Toast.makeText(ListOfEvents.this, "Erro ao analisar a data", Toast.LENGTH_SHORT).show();
+                            }
+
                             String about = eventObject.getString("about");
                             double price = eventObject.getDouble("price");
                             String currency = eventObject.getString("currency");
@@ -164,67 +161,73 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
 
                             JSONObject poiObject = eventObject.getJSONObject("pointofinterest");
                             PointOfInterestDomain pointOfInterest = new PointOfInterestDomain(
-                                    poiObject.getString("_id"),
+                                    poiObject.optString("_id", ""),
                                     poiObject.getString("name"),
                                     poiObject.getString("location"),
                                     poiObject.getDouble("latitude"),
                                     poiObject.getDouble("longitude"),
-                                    poiObject.optString("street"),
-                                    poiObject.optString("postcode"),
+                                    poiObject.optString("street", ""),
+                                    poiObject.optString("postcode", ""),
                                     poiObject.getString("description"),
                                     poiObject.getString("category"),
                                     poiObject.getString("thumbnail")
                             );
-                            Toast.makeText(this, "name: "+name+" organizer: "+organizer, Toast.LENGTH_SHORT).show();
+
                             events.add(new ListEventsDomain(id, name, organizer, category, contact, startDate, endDate, about, price, currency, maxParticipants, currentParticipants, favorites, poiId, pointOfInterest, "pic1", userId, userIdReq, calendarIdReq));
                         }
+
                         runOnUiThread(() -> initRecyclerEVENTsView(events));
-                    } catch (JSONException | ParseException e) {
+                    } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.e("API_ERROR", "Erro ao processar resposta JSON: " + e.getMessage());
                         Toast.makeText(ListOfEvents.this, "Erro ao processar resposta JSON", Toast.LENGTH_SHORT).show();
                     }
-                }, error -> {
-            // Verificar se houve erro de rede
-            if (error.networkResponse != null) {
-                // Processar a resposta como um erro do servidor
-                int statusCode = error.networkResponse.statusCode;
-                String errorMessage = new String(error.networkResponse.data);
-                try {
-                    JSONObject errorJson = new JSONObject(errorMessage);
-                    if (errorJson.has("error")) {
-                        JSONObject errorObject = errorJson.getJSONObject("error");
-                        String errorCode = errorObject.getString("code");
-                        String message = errorObject.getString("message");
-                        String details = errorObject.optString("details");
+                },
+                error -> {
+                    // Handle network errors
+                    if (error.networkResponse != null) {
+                        int statusCode = error.networkResponse.statusCode;
+                        String errorMessage = new String(error.networkResponse.data);
+                        Log.e("API_ERROR", "Error response: " + errorMessage);
 
-                        // Aqui você pode lidar com diferentes códigos de erro conforme necessário
-                        switch (statusCode) {
-                            case 401:
-                                // Código de erro 401: Unauthorized
-                                Toast.makeText(ListOfEvents.this, "Erro 401: Não autorizado - " + message, Toast.LENGTH_SHORT).show();
-                                break;
-                            case 404:
-                                // Código de erro 404: Not Found
-                                Toast.makeText(ListOfEvents.this, "Erro 404: Recurso não encontrado - " + message, Toast.LENGTH_SHORT).show();
-                                break;
-                            default:
-                                // Lidar com outros códigos de erro conforme necessário
-                                Toast.makeText(ListOfEvents.this, "Erro " + statusCode + ": " + message, Toast.LENGTH_SHORT).show();
-                                break;
+                        try {
+                            JSONObject errorJson = new JSONObject(errorMessage);
+                            if (errorJson.has("error")) {
+                                JSONObject errorObject = errorJson.getJSONObject("error");
+                                String errorCode = errorObject.getString("code");
+                                String message = errorObject.getString("message");
+
+                                switch (statusCode) {
+                                    case 401:
+                                        Toast.makeText(ListOfEvents.this, "Erro 401: Não autorizado - " + message, Toast.LENGTH_SHORT).show();
+                                        break;
+                                    case 404:
+                                        Toast.makeText(ListOfEvents.this, "Erro 404: Recurso não encontrado - " + message, Toast.LENGTH_SHORT).show();
+                                        break;
+                                    default:
+                                        Toast.makeText(ListOfEvents.this, "Erro " + statusCode + ": " + message, Toast.LENGTH_SHORT).show();
+                                        break;
+                                }
+                            } else {
+                                Toast.makeText(ListOfEvents.this, "Erro JSON inesperado: " + errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(ListOfEvents.this, "Erro ao processar resposta de erro JSON", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        // Erro JSON inesperado
-                        Toast.makeText(ListOfEvents.this, "Erro JSON inesperado: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        Log.e("API_ERROR", "Network error occurred");
+                        Toast.makeText(ListOfEvents.this, "Erro de rede ao carregar os eventos. Verifique sua conexão com a Internet e tente novamente.", Toast.LENGTH_SHORT).show();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(ListOfEvents.this, "Erro ao processar resposta de erro JSON", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                // Erro de rede
-                Toast.makeText(ListOfEvents.this, "Erro de rede ao carregar os eventos. Verifique sua conexão com a Internet e tente novamente.", Toast.LENGTH_SHORT).show();
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("accept", "application/json");
+                headers.put("SERVICE-API-KEY", apiKey);
+                return headers;
             }
-        });
+        };
         RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonArrayRequest);
     }
 }

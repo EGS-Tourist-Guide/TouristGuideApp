@@ -35,7 +35,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:text="Welcome back"
+                        android:text="@string/welcome_back"
                         android:textColor="@color/white"
                         android:textStyle="bold"
                         app:layout_constraintStart_toEndOf="@+id/profileImg"
@@ -44,7 +44,7 @@
                         android:id="@+id/textView6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Rafael Amorim"
+                        android:text="@string/rafael_amorim"
                         android:textColor="@color/white"
                         android:textSize="27sp"
                         app:layout_constraintBottom_toBottomOf="@+id/profileImg"
@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="Discover the Best Place To Visit"
+                    android:text="@string/discover_the_best_place_to_visit"
                     android:textColor="@color/white"
                     android:textSize="27sp"
                     android:textStyle="bold" />
@@ -84,7 +84,7 @@
                         android:drawableStart="@drawable/search_icon"
                         android:drawablePadding="16dp"
                         android:ems="10"
-                        android:hint="Search a location"
+                        android:hint="@string/search_a_location"
                         android:inputType="text"
                         android:padding="16dp"
                         android:textColor="@color/black"
@@ -120,10 +120,10 @@
                 android:orientation="horizontal">
                 <TextView
                     android:id="@+id/CabecalhoListOfEventsHzt"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="List of events"
+                    android:text="@string/list_of_events"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"/>
@@ -131,7 +131,7 @@
                     android:id="@+id/ConteudoListOfEventsHzt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="See all"
+                    android:text="@string/see_all"
                     android:textColor="@color/orange"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -204,7 +204,7 @@
                     android:id="@+id/textView12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Home"
+                    android:text="@string/home"
                     android:textAlignment="center" />
             </LinearLayout>
             <LinearLayout

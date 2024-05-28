@@ -26,7 +26,7 @@ public class ListEventsDomain implements Serializable {
     private int calendarIdReq;
 
     public ListEventsDomain(String id, String name, String organizer, String category, String contact, Date startDate,
-                         Date endDate, String about, double price, String currency, int maxParticipants,
+                            Date endDate, String about, double price, String currency, int maxParticipants,
                          int currentParticipants, int favorites, String pointOfInterestId, PointOfInterestDomain pointOfInterest, String thumbnailEvent, String userId, int userIdReq, int calendarIdReq) {
         this.userId = userId;
         this.userIdReq = userIdReq;
@@ -47,8 +47,27 @@ public class ListEventsDomain implements Serializable {
         this.pointOfInterestId = pointOfInterestId;
         this.pointOfInterest = pointOfInterest;
         this.thumbnailEvent = thumbnailEvent;
+        System.out.println("Passou tudo para o ListEventsDomain?: " +
+                "userId: " + userId +
+                " userIdReq: " + userIdReq +
+                " calendarIdReq: " + calendarIdReq +
+                " id: " + id +
+                " name: " + name +
+                " organizer: " + organizer +
+                " category: " + category +
+                " contact: " + contact +
+                " startDate: " + startDate +
+                " endDate: " + endDate +
+                " about: " + about +
+                " price: " + price +
+                " currency: " + currency +
+                " maxParticipants: " + maxParticipants +
+                " currentParticipants: " + currentParticipants +
+                " favorites: " + favorites +
+                " pointOfInterestId: " + pointOfInterestId +
+                " pointOfInterest: " + pointOfInterest +
+                " thumbnailEvent: " + thumbnailEvent);
     }
-
     public String getId() {
         return id;
     }
