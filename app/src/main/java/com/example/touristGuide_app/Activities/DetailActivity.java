@@ -20,6 +20,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.example.touristGuide_app.Adapters.CategoryAdapter;
+import com.example.touristGuide_app.Domains.CategoryDomain;
 import com.example.touristGuide_app.Domains.OneEventDomain;
 import com.example.touristGuide_app.R;
 
@@ -28,6 +30,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -51,7 +54,18 @@ public class DetailActivity extends AppCompatActivity {
 //        userId = getIntent().getStringExtra("userId");
         setContentView(R.layout.activity_detail);
         initView();
-        fetchEventDetails(eventId);
+
+        // Inicialize a lista de categorias com os dados corretos
+
+        HashMap<String, Integer> map = new HashMap<>();
+        // Adicione entradas para cada categoria e seu ID de recurso de imagem correspondente
+        map.put("Nature", R.drawable.cat1);
+        map.put("Food", R.drawable.cat2);
+        map.put("Culture", R.drawable.cat3);
+        map.put("Shopping", R.drawable.cat4);
+        map.put("Landmarks", R.drawable.cat5);
+
+        fetchEventDetails(eventId, map);
         setVariable();
     }
     private void initView() {
@@ -115,11 +129,10 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
-    private void fetchEventDetails(String eventId) {
+    private void fetchEventDetails(String eventId, HashMap<String, Integer> categoryImageMap) {
         String url = "http://grupo4-egs-deti.ua.pt/e1/events/" + eventId;
         String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
         RequestQueue queue = Volley.newRequestQueue(this);
-
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
@@ -136,10 +149,9 @@ public class DetailActivity extends AppCompatActivity {
                             int currentParticipants = response.getInt("currentparticipants");
 
                             String startDate = response.getString("startdate");
-                            System.out.println("start dateeeeeeeeeeeeee:::::::::::::::: "+ startDate);
                             String endDate = response.getString("enddate");
-                            System.out.println("end dateeeeeeeeeeeeee:::::::::::::::: "+ startDate);
-                            // result of print: "2024-05-11 19:45:00"
+                            String category = response.getJSONObject("pointofinterest").getString("category").toLowerCase();
+
 
                             String thumbnail = response.getJSONObject("pointofinterest").getString("thumbnail");
 
@@ -152,7 +164,6 @@ public class DetailActivity extends AppCompatActivity {
                             currentParticipantsTxt.setText(String.valueOf(currentParticipants));
                             startDateTxt.setText(startDate);
                             endDateTxt.setText(endDate);
-
 
                             Glide.with(DetailActivity.this).load(thumbnail).into(thumbnailEventImg);
                         } catch (JSONException e) {
@@ -174,10 +185,8 @@ public class DetailActivity extends AppCompatActivity {
                 return headers;
             }
         };
-
         queue.add(jsonObjectRequest);
     }
-
     private void handleErrorResponse(VolleyError error) {
         if (error.networkResponse != null) {
             int statusCode = error.networkResponse.statusCode;

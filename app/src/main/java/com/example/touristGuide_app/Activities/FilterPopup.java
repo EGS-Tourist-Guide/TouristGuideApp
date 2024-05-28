@@ -112,13 +112,15 @@ public class FilterPopup extends DialogFragment implements CategoryAdapter.OnCat
     }
     private void initRecyclerView(View view){
         // Initialize RecyclerView and adapter for categories
+        // Lista de categorias
         ArrayList<CategoryDomain> catsList = new ArrayList<>();
-        catsList.add(new CategoryDomain("Nature", "cat1"));
-        catsList.add(new CategoryDomain("Food", "cat2"));
-        catsList.add(new CategoryDomain("Culture", "cat3"));
-        catsList.add(new CategoryDomain("Shopping", "cat4"));
-        catsList.add(new CategoryDomain("Landmarks", "cat5"));
+        catsList.add(new CategoryDomain("Nature"));
+        catsList.add(new CategoryDomain("Food"));
+        catsList.add(new CategoryDomain("Culture"));
+        catsList.add(new CategoryDomain("Shopping"));
+        catsList.add(new CategoryDomain("Landmarks"));
 
+        // Configuração do RecyclerView e do adapter
         recyclerViewCategory = view.findViewById(R.id.viewCat);
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         adapterCategory = new CategoryAdapter(catsList, this);
