@@ -8,8 +8,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.touristGuide_app.R;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class EventDetailActivity extends AppCompatActivity {
 
@@ -30,25 +36,21 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         try {
-            // Parse the event details JSON string into a JSONObject
-            JSONObject eventDetailsJson = new JSONObject(eventDetailsJsonString);
+            // Parse the event details JSON string into a List
+            Gson gson = new Gson();
+            List<String> eventDetails = gson.fromJson(eventDetailsJsonString, new TypeToken<List<String>>() {}.getType());
 
-            // Extract the event details from the JSONObject
-            String eventName = eventDetailsJson.optString("title");
-            String eventLocation = eventDetailsJson.optString("location");
-            int eventScore = eventDetailsJson.optInt("score");
-            // Extract other event details as needed
+            // Log the event details received
+            Log.d("EventDetailActivity", "Event details: " + eventDetails);
 
             // Display the event details
-            TextView eventNameTextView = findViewById(R.id.eventNameTextView);
-            TextView eventLocationTextView = findViewById(R.id.eventLocationTextView);
-            TextView eventScoreTextView = findViewById(R.id.eventScoreTextView);
-            // Display other event details as needed
+            TextView eventDetailsTextView = findViewById(R.id.eventNameTextView);
 
-            eventNameTextView.setText(eventName);
-            eventLocationTextView.setText("Location: " + eventLocation);
-            eventScoreTextView.setText("Score: " + eventScore);
-            // Display other event details as needed
+            StringBuilder eventDetailsStringBuilder = new StringBuilder();
+            for (String eventDetail : eventDetails) {
+                eventDetailsStringBuilder.append(eventDetail).append("\n");
+            }
+            eventDetailsTextView.setText(eventDetailsStringBuilder.toString());
 
             // Attach click listener to the delete button
             Button deleteButton = findViewById(R.id.deleteButton);
@@ -61,7 +63,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 }
             });
 
-        } catch (JSONException e) {
+        } catch (JsonSyntaxException e) {
             // If there is an error parsing the JSON, log an error and finish the activity
             e.printStackTrace();
             Log.e("EventDetailActivity", "Error parsing event details JSON");

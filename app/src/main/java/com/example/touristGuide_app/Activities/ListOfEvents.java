@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+
 public class ListOfEvents extends AppCompatActivity implements OnLocationSelectedListener {
     private RecyclerView.Adapter adapterPopular;
     private RecyclerView recyclerViewPopular;

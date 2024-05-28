@@ -106,7 +106,6 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                 // Navegar para a página de calendários
                 Intent intent = new Intent(ListOfPointOfInterest.this, CalendarEmpty.class);
                 intent.putExtra("fromDetailActivity", false);
-                intent.putExtra("userId", userId);
                 intent.putExtra("userIdReq", userIdReq);
                 intent.putExtra("calendarIdReq", calendarIdReq);
                 startActivity(intent);
