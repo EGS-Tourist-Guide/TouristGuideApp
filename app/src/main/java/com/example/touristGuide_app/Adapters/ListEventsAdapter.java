@@ -65,9 +65,10 @@ public class ListEventsAdapter extends RecyclerView.Adapter<ListEventsAdapter.Vi
         // Adicione o OnClickListener
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
-//            intent.putExtra("userId", event.getUserId());
-//            intent.putExtra("userIdReq", event.getUserIdReq());
-//            intent.putExtra("calendarIdReq", event.getCalendarIdReq());
+            intent.putExtra("userIdReq", event.getUserIdReq());
+            System.out.println("userIdReqqqqqqqqqqq"+ event.getUserIdReq());
+            intent.putExtra("calendarIdReq", event.getCalendarIdReq());
+            System.out.println("calendarIdReqqqqqqqqqqq"+ event.getCalendarIdReq());
             intent.putExtra("eventId", event.getId());
             context.startActivity(intent);
         });

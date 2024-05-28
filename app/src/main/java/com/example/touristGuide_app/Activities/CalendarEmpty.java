@@ -5,6 +5,7 @@ import static com.example.touristGuide_app.Activities.CalendarUtils.monthYearFro
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,8 +36,7 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
     private DatabaseReference databaseReference;
-    private FirebaseAuth firebaseAuth;
-    private String userId;
+    private String startDateString, endDateString;
     private int userIdReq;
     private int calendarIdReq;
     private LocalDate newLocalDate;
@@ -50,18 +50,11 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         CalendarUtils.selectedDate = LocalDate.now();
         setMonthView();
 
-        // Inicialize o Firebase
-        firebaseAuth = FirebaseAuth.getInstance();
+        // Initialize Firebase reference
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
-        // Obtenha o ID do usuário atualmente autenticado
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser != null) {
-            userId = currentUser.getUid();
-        }
 
     }
-
 
     private void initWidgets() {
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
@@ -92,7 +85,7 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     public void onItemClick(int position, LocalDate date) {
         if (date != null) {
             // Check if the clicked date is in Firebase
-            DatabaseReference userRef = databaseReference.child(userId).child("dates");
+            DatabaseReference userRef = databaseReference.child(String.valueOf(userIdReq)).child("dates");
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -113,47 +106,60 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
             });
         }
     }
+
     public void weeklyAction(View view) {
         startActivity(new Intent(this, WeekViewActivity.class));
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        userId = getIntent().getStringExtra("userId");
+
         userIdReq = getIntent().getIntExtra("userIdReq", 0);
         calendarIdReq = getIntent().getIntExtra("calendarIdReq", 0);
 
-        Toast.makeText(this, "Recebeu id " + userId + "\nuserIdEndpoint: "+userIdReq+ "\ncalendarIdEndpoint: "+calendarIdReq+" no CalendarEmpty", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Recebeu userIdReq: " + userIdReq + "\ncalendarIdReq: " + calendarIdReq + " no CalendarEmpty", Toast.LENGTH_SHORT).show();
 
         if (getIntent().getBooleanExtra("fromDetailActivity", false)) {
-            Date newDate = (Date) getIntent().getSerializableExtra("eventDate");
-            if (newDate != null) {
-                newLocalDate = newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                String dateString = newLocalDate.toString();
-                System.out.println("onResume: eventDate -> "+dateString);
+            Intent intent = getIntent();
+            if (intent != null) {
+                startDateString = intent.getStringExtra("startDate");
+                endDateString = intent.getStringExtra("endDate");
+                userIdReq = intent.getIntExtra("userIdReq", 0);
+                calendarIdReq = intent.getIntExtra("calendarIdReq", 0);
 
-                // Salvar a data na Firebase
-                DatabaseReference userRef = databaseReference.child(userId).child("dates");
-                userRef.child(dateString).setValue(true);
-                System.out.println("userRef -> "+userRef); // userRef -> https://touristguidefirebase-default-rtdb.firebaseio.com/users/6kTDJPmhULWcy2uSculYd1XyVv93/dates
-                // link say -> Database lives in a different region. Please change your database URL to https://touristguidefirebase-default-rtdb.europe-west1.firebasedatabase.app
+                // Add logs to check the received values
+                Log.d("CalendarEmpty", "Received startDate: " + startDateString);
+                Log.d("CalendarEmpty", "Received endDate: " + endDateString);
+                Log.d("CalendarEmpty", "Received userIdReq: " + userIdReq);
+                Log.d("CalendarEmpty", "Received calendarIdReq: " + calendarIdReq);
+
+            } else {
+                Log.e("CalendarEmpty", "Intent is null");
+            }
+
+            if (startDateString != null && endDateString != null) {
+                // Save start and end dates as a single entry in Firebase
+                DatabaseReference userRef = databaseReference.child(String.valueOf(userIdReq)).child("dates");
+                String dateKey = startDateString + "_" + endDateString; // Use a unique key
+                userRef.child(dateKey).child("start").setValue(startDateString);
+                userRef.child(dateKey).child("end").setValue(endDateString);
             }
         }
 
-
-        // Carregar as datas salvas da Firebase
-        DatabaseReference userRef = databaseReference.child(userId).child("dates");
+        // Load saved dates from Firebase
+        DatabaseReference userRef = databaseReference.child(String.valueOf(userIdReq)).child("dates");
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                savingDatesByID.clear(); // Limpar a lista antes de adicionar as novas datas
-                System.out.println("dataSnapshot.getChildren() -> "+dataSnapshot.getChildren());
+                savingDatesByID.clear(); // Clear the list before adding new dates
+                System.out.println("dataSnapshot.getChildren() -> " + dataSnapshot.getChildren());
                 for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
                     String date = dateSnapshot.getKey();
-                    System.out.println("Antes de dar add ao savingDatesById -> "+date);
+                    System.out.println("Antes de dar add ao savingDatesById -> " + date);
                     savingDatesByID.add(date);
                 }
-                // Após carregar os dados, atualize a exibição do mês
+                // After loading the data, update the month view
                 setMonthView();
             }
 
@@ -165,3 +171,4 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         });
     }
 }
+

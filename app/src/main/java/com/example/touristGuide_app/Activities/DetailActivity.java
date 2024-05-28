@@ -20,26 +20,21 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.example.touristGuide_app.Adapters.CategoryAdapter;
-import com.example.touristGuide_app.Domains.CategoryDomain;
 import com.example.touristGuide_app.Domains.OneEventDomain;
 import com.example.touristGuide_app.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class DetailActivity extends AppCompatActivity {
     private TextView nameTxt, organizerTxt, contactTxt, aboutTxt, priceTxt, maxParticipantsTxt, currentParticipantsTxt;
     private TextView startDateTxt, endDateTxt;
-    String eventId, calendarIdReq, userIdReq, userId;
+    private String startDate, endDate;
+    String eventId;
+    int calendarIdReq, userIdReq;
     private String serverIp;
     private OneEventDomain item;
     private ImageView thumbnailEventImg, backBtn, favoritesIcon, categoryEventImg;
@@ -49,23 +44,17 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         eventId = getIntent().getStringExtra("eventId");
         serverIp = getString(R.string.ip);
-//        calendarIdReq = getIntent().getStringExtra("calendarIdReq");
-//        userIdReq = getIntent().getStringExtra("userIdReq");
-//        userId = getIntent().getStringExtra("userId");
+
+        calendarIdReq = getIntent().getIntExtra("calendarIdReq", 0);
+        System.out.println("calendarIdReqqqqqqqqqqq detail activity "+ calendarIdReq);
+
+        userIdReq = getIntent().getIntExtra("userIdReq", 0);
+        System.out.println("userIdReqqqqqqqqqqq detail activity "+ userIdReq);
+
         setContentView(R.layout.activity_detail);
         initView();
 
-        // Inicialize a lista de categorias com os dados corretos
-
-        HashMap<String, Integer> map = new HashMap<>();
-        // Adicione entradas para cada categoria e seu ID de recurso de imagem correspondente
-        map.put("Nature", R.drawable.cat1);
-        map.put("Food", R.drawable.cat2);
-        map.put("Culture", R.drawable.cat3);
-        map.put("Shopping", R.drawable.cat4);
-        map.put("Landmarks", R.drawable.cat5);
-
-        fetchEventDetails(eventId, map);
+        fetchEventDetails(eventId);
         setVariable();
     }
     private void initView() {
@@ -91,14 +80,10 @@ public class DetailActivity extends AppCompatActivity {
     }
     private void setVariable() {
         item = (OneEventDomain) getIntent().getSerializableExtra("object");
-
         backBtn.setOnClickListener(v -> finish());
-
         btnBookNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 // Criar um AlertDialog.Builder
                 AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
                 // Definir título e mensagem do popup
@@ -108,18 +93,26 @@ public class DetailActivity extends AppCompatActivity {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // Iniciar a atividade do calendário e passar os detalhes do evento como uma string extra
-                                Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
-                                // Toast.makeText(DetailActivity.this, "A passar: "+ item.getEventDate(), Toast.LENGTH_SHORT).show();
-                                // System.out.println("A passar: "+ item.getEventDate());
-                                //intent.putExtra("eventDate", item.getEventDate());
+                                try {
+                                    // Start the CalendarEmpty activity and pass event details as extras
+                                    Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
+                                    intent.putExtra("startDate", startDate);
+                                    Log.d("DetailActivity", "Passing startDate: " + startDate);
+                                    intent.putExtra("endDate", startDate);
+                                    Log.d("DetailActivity", "Passing endDate: " + startDate);
 
-                                intent.putExtra("userId", item.getUserId());
-                                intent.putExtra("userIdReq", item.getUserIdReq());
-                                intent.putExtra("calendarIdReq", item.getCalendarIdReq());
 
-                                intent.putExtra("fromDetailActivity", true); // Adiciona esta flag
-                                startActivity(intent);
+                                    intent.putExtra("userIdReq", userIdReq);
+                                    Log.d("DetailActivity", "Passing userIdReq: " + userIdReq);
+                                    intent.putExtra("calendarIdReq", calendarIdReq);
+                                    Log.d("DetailActivity", "Passing calendarIdReq: " + calendarIdReq);
+                                    intent.putExtra("fromDetailActivity", true);
+
+                                    Log.d("DetailActivity", "Starting CalendarEmpty activity");
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    Log.e("DetailActivity", "Error starting CalendarEmpty activity", e);
+                                }
                                 dialog.dismiss();
                             }
                         });
@@ -129,7 +122,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
-    private void fetchEventDetails(String eventId, HashMap<String, Integer> categoryImageMap) {
+    private void fetchEventDetails(String eventId) {
         String url = "http://grupo4-egs-deti.ua.pt/e1/events/" + eventId;
         String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -148,8 +141,8 @@ public class DetailActivity extends AppCompatActivity {
                             int maxParticipants = response.getInt("maxparticipants");
                             int currentParticipants = response.getInt("currentparticipants");
 
-                            String startDate = response.getString("startdate");
-                            String endDate = response.getString("enddate");
+                            startDate = response.getString("startdate");
+                            endDate = response.getString("enddate");
                             String category = response.getJSONObject("pointofinterest").getString("category").toLowerCase();
 
 
