@@ -10,23 +10,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
 import com.example.touristGuide_app.Activities.DetailActivity;
 import com.example.touristGuide_app.R;
-import com.example.touristGuide_app.Domains.PopularDomain;
+import com.example.touristGuide_app.Domains.OneEventDomain;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.ViewHolder> {
-    ArrayList<PopularDomain> items;
+public class OneEventAdapter extends RecyclerView.Adapter<OneEventAdapter.ViewHolder> {
+    ArrayList<OneEventDomain> items;
     private String userId;
     private int userIdReq;
     private int calendarIdReq;
 
-    public PopularAdapter(ArrayList<PopularDomain> items, String userId, int userIdReq, int calendarIdReq) {
+    public OneEventAdapter(ArrayList<OneEventDomain> items, String userId, int userIdReq, int calendarIdReq) {
         this.items = items;
         this.userId = userId;
         this.userIdReq = userIdReq;
@@ -35,13 +31,13 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.ViewHold
 
     @NonNull
     @Override
-    public PopularAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_popular, parent, false);
+    public OneEventAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_one_event, parent, false);
         return new ViewHolder(inflate);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PopularAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull OneEventAdapter.ViewHolder holder, int position) {
         //holder.titleTxt.setText(items.get(position).getTitle());
         //holder.locationTxt.setText(items.get(position).getLocation());
         //holder.scoreTxt.setText(""+items.get(position).getScore());
@@ -50,11 +46,11 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.ViewHold
         //Glide.with(holder.itemView.getContext()).load(drawableResId)
         //        .transform(new CenterCrop(), new GranularRoundedCorners(40,40,40,40)).into(holder.pic);
 
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(holder.itemView.getContext(), DetailActivity.class);
-            intent.putExtra("object", items.get(position));
-            holder.itemView.getContext().startActivity(intent);
-        });
+//        holder.itemView.setOnClickListener(v -> {
+//            Intent intent = new Intent(holder.itemView.getContext(), DetailActivity.class);
+//            intent.putExtra("object", items.get(position));
+//            holder.itemView.getContext().startActivity(intent);
+//        });
     }
 
     @Override

@@ -15,9 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.touristGuide_app.Adapters.ListEventsAdapter;
-import com.example.touristGuide_app.Adapters.PopularAdapter;
 import com.example.touristGuide_app.Domains.ListEventsDomain;
 import com.example.touristGuide_app.Domains.PointOfInterestDomain;
 import com.example.touristGuide_app.R;
@@ -29,12 +27,10 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class ListOfEvents extends AppCompatActivity implements OnLocationSelectedListener {
     private RecyclerView.Adapter adapterPopular;
@@ -80,13 +76,7 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         //////////////////////////// EVENTs
         fetchEventsFromAPI();
     }
-    private void initRecyclerEVENTsView(ArrayList<ListEventsDomain> events) {
-        recyclerViewPopular = findViewById(R.id.viewEvent);
-        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
-        adapterPopular = new ListEventsAdapter(events);
-        recyclerViewPopular.setAdapter(adapterPopular);
-        Log.d("API_RESPONSE", "RecyclerView initialized with events: " + events.size());
-    }
+
     public void onFilterButtonClick(View view) {
         FilterPopup filterPopup = new FilterPopup();
         // Defina este MainActivity como o listener para receber as coordenadas selecionadas
@@ -118,6 +108,13 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
                 filterPopup.updateLocation(latitude, longitude);
             }
         }
+    }
+    private void initRecyclerEVENTsView(ArrayList<ListEventsDomain> events) {
+        recyclerViewPopular = findViewById(R.id.viewEvent);
+        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
+        adapterPopular = new ListEventsAdapter(this, events);
+        recyclerViewPopular.setAdapter(adapterPopular);
+        Log.d("API_RESPONSE", "RecyclerView initialized with events: " + events.size());
     }
     private void fetchEventsFromAPI() {
         String url = "http://" + serverIp + "/e1/events?limit=25&offset=0";

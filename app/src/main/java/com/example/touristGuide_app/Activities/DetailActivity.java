@@ -3,44 +3,65 @@ package com.example.touristGuide_app.Activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.example.touristGuide_app.Domains.PopularDomain;
+import com.example.touristGuide_app.Domains.OneEventDomain;
 import com.example.touristGuide_app.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class DetailActivity extends AppCompatActivity {
     private TextView nameTxt, organizerTxt, contactTxt, aboutTxt, priceTxt, maxParticipantsTxt, currentParticipantsTxt;
-    private Date startDateTxt, endDateTxt;
-    private PopularDomain item;
+    private TextView startDateTxt, endDateTxt;
+    String eventId, calendarIdReq, userIdReq, userId;
+    private String serverIp;
+    private OneEventDomain item;
     private ImageView thumbnailEventImg, backBtn, favoritesIcon, categoryEventImg;
     private Button btnBookNow;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        eventId = getIntent().getStringExtra("eventId");
+        serverIp = getString(R.string.ip);
+//        calendarIdReq = getIntent().getStringExtra("calendarIdReq");
+//        userIdReq = getIntent().getStringExtra("userIdReq");
+//        userId = getIntent().getStringExtra("userId");
+        setContentView(R.layout.activity_detail);
+        initView();
+        fetchEventDetails(eventId);
+        setVariable();
+    }
     private void initView() {
         nameTxt = findViewById(R.id.nameTxt);
         organizerTxt = findViewById(R.id.organizerTxt);
         categoryEventImg = findViewById(R.id.categoryEventImg);
         contactTxt = findViewById(R.id.contactTxt);
 
-        //startDateTxt = findViewById(R.id.startDateTxt);
-        //endDateTxt = findViewById(R.id.endDateTxt);
+        startDateTxt = findViewById(R.id.startDateTxt);
+        endDateTxt = findViewById(R.id.endDateTxt);
 
         aboutTxt = findViewById(R.id.aboutTxt);
         priceTxt = findViewById(R.id.priceTxt);
@@ -52,62 +73,17 @@ public class DetailActivity extends AppCompatActivity {
         thumbnailEventImg = findViewById(R.id.thumbnailEventImg);
         backBtn = findViewById(R.id.backBtn);
         btnBookNow = findViewById(R.id.btnBookNow);
+        // Inicializa o dateFormat
     }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-        initView();
-        setVariable();
-    }
-
     private void setVariable() {
-        item = (PopularDomain) getIntent().getSerializableExtra("object");
-        //Toast.makeText(this, "userIdEP: "+item.getUserIdReq()+"\ncalendarIdEP"+item.getCalendarIdReq(), Toast.LENGTH_SHORT).show();
+        item = (OneEventDomain) getIntent().getSerializableExtra("object");
 
-        nameTxt.setText(item.getName());
-        organizerTxt.setText(item.getOrganizer());
-        contactTxt.setText(item.getContact());
-
-        //priceTxt.setDouble(item.getPrice());
-        aboutTxt.setText(item.getAbout());
-
-        maxParticipantsTxt.setText(item.getMaxParticipants());
-        currentParticipantsTxt.setText(item.getCurrentParticipants());
-
-
-        // Exiba a data do evento na descrição
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        String startDateEndStr = dateFormat.format(item.getStartDate()); // startDate
-        String eventDateEndStr = dateFormat.format(item.getEndDate()); // enddate
-        //startDateTxt.setText(startDateEndStr);
-        //endDateTxt.setText(eventDateEndStr);
-
-        int drawableResId = getResources().getIdentifier(item.getThumbnailEvent(),"drawable", getPackageName());
-        Glide.with(this).load(drawableResId).into(thumbnailEventImg);
-        int drawableResId1 = getResources().getIdentifier(item.getCategory(),"drawable", getPackageName());
-        Glide.with(this).load(drawableResId1).into(categoryEventImg);
-
-        backBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                finish();
-            }
-        });
+        backBtn.setOnClickListener(v -> finish());
 
         btnBookNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Criar um objeto JSON contendo os detalhes do evento
-                JSONObject eventDetailsJson = new JSONObject();
-                //try {
-                    //eventDetailsJson.put("title", item.getTitle());
-                    //eventDetailsJson.put("location", item.getLocation());
-                    //eventDetailsJson.put("score", item.getScore());
-                    // Adicione outros detalhes do evento conforme necessário
-                //} catch (JSONException e) {
-                //    e.printStackTrace();
-                //}
+
 
                 // Criar um AlertDialog.Builder
                 AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
@@ -120,7 +96,6 @@ public class DetailActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 // Iniciar a atividade do calendário e passar os detalhes do evento como uma string extra
                                 Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
-                                intent.putExtra("eventDetails", eventDetailsJson.toString());
                                 // Toast.makeText(DetailActivity.this, "A passar: "+ item.getEventDate(), Toast.LENGTH_SHORT).show();
                                 // System.out.println("A passar: "+ item.getEventDate());
                                 //intent.putExtra("eventDate", item.getEventDate());
@@ -140,6 +115,102 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
+    private void fetchEventDetails(String eventId) {
+        String url = "http://grupo4-egs-deti.ua.pt/e1/events/" + eventId;
+        String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            // Parse the JSON response and update the UI
+                            String name = response.getString("name");
+                            String organizer = response.getString("organizer");
+                            String contact = response.getString("contact");
+                            String about = response.getString("about");
+                            double price = response.getDouble("price");
+                            String currency = response.getString("currency");
+                            int maxParticipants = response.getInt("maxparticipants");
+                            int currentParticipants = response.getInt("currentparticipants");
+
+                            String startDate = response.getString("startdate");
+                            System.out.println("start dateeeeeeeeeeeeee:::::::::::::::: "+ startDate);
+                            String endDate = response.getString("enddate");
+                            System.out.println("end dateeeeeeeeeeeeee:::::::::::::::: "+ startDate);
+                            // result of print: "2024-05-11 19:45:00"
+
+                            String thumbnail = response.getJSONObject("pointofinterest").getString("thumbnail");
+
+                            nameTxt.setText(name);
+                            organizerTxt.setText(organizer);
+                            contactTxt.setText(contact);
+                            aboutTxt.setText(about);
+                            priceTxt.setText(currency + " " + price);
+                            maxParticipantsTxt.setText(String.valueOf(maxParticipants));
+                            currentParticipantsTxt.setText(String.valueOf(currentParticipants));
+                            startDateTxt.setText(startDate);
+                            endDateTxt.setText(endDate);
 
 
+                            Glide.with(DetailActivity.this).load(thumbnail).into(thumbnailEventImg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(DetailActivity.this, "Failed to parse event details", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        handleErrorResponse(error);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("accept", "application/json");
+                headers.put("SERVICE-API-KEY", apiKey);
+                return headers;
+            }
+        };
+
+        queue.add(jsonObjectRequest);
+    }
+
+    private void handleErrorResponse(VolleyError error) {
+        if (error.networkResponse != null) {
+            int statusCode = error.networkResponse.statusCode;
+            String errorMessage = new String(error.networkResponse.data);
+            Log.e("API_ERROR", "Error response: " + errorMessage);
+
+            try {
+                JSONObject errorJson = new JSONObject(errorMessage);
+                if (errorJson.has("error")) {
+                    JSONObject errorObject = errorJson.getJSONObject("error");
+                    String message = errorObject.getString("message");
+
+                    switch (statusCode) {
+                        case 401:
+                            Toast.makeText(DetailActivity.this, "Erro 401: Não autorizado - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 404:
+                            Toast.makeText(DetailActivity.this, "Erro 404: Recurso não encontrado - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(DetailActivity.this, "Erro " + statusCode + ": " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                } else {
+                    Toast.makeText(DetailActivity.this, "Erro JSON inesperado: " + errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(DetailActivity.this, "Erro ao processar resposta de erro JSON", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.e("API_ERROR", "Network error occurred");
+            Toast.makeText(DetailActivity.this, "Erro de rede ao carregar o evento. Verifique sua conexão com a Internet e tente novamente.", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

@@ -1,10 +1,9 @@
 package com.example.touristGuide_app.Domains;
-import com.google.android.gms.maps.model.PointOfInterest;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class PopularDomain implements Serializable {
+public class OneEventDomain implements Serializable {
     private String id;
     private String name;
     private String organizer;
@@ -25,9 +24,9 @@ public class PopularDomain implements Serializable {
     private int userIdReq;
     private int calendarIdReq;
 
-    public PopularDomain(String id, String name, String organizer, String category, String contact, Date startDate,
-                         Date endDate, String about, double price, String currency, int maxParticipants,
-                         int currentParticipants, int favorites, String pointOfInterestId, PointOfInterestDomain pointOfInterest, String thumbnailEvent, String userId, int userIdReq, int calendarIdReq) {
+    public OneEventDomain(String id, String name, String organizer, String category, String contact, Date startDate,
+                          Date endDate, String about, double price, String currency, int maxParticipants,
+                          int currentParticipants, int favorites, String pointOfInterestId, PointOfInterestDomain pointOfInterest, String thumbnailEvent, String userId, int userIdReq, int calendarIdReq) {
         this.userId = userId;
         this.userIdReq = userIdReq;
         this.calendarIdReq = calendarIdReq;

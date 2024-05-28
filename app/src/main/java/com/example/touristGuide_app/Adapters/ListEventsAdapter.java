@@ -1,5 +1,6 @@
 package com.example.touristGuide_app.Adapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,8 +26,10 @@ import java.util.Locale;
 
 public class ListEventsAdapter extends RecyclerView.Adapter<ListEventsAdapter.ViewHolder> {
     ArrayList<ListEventsDomain> items;
+    Context context;
 
-    public ListEventsAdapter(ArrayList<ListEventsDomain> items) {
+    public ListEventsAdapter(Context context, ArrayList<ListEventsDomain> items) {
+        this.context = context;
         this.items = items;
     }
 
@@ -50,18 +53,25 @@ public class ListEventsAdapter extends RecyclerView.Adapter<ListEventsAdapter.Vi
         holder.maxParticipantsTxt.setText(String.valueOf(event.getMaxParticipants()));
         holder.currentParticipantsTxt.setText(String.valueOf(event.getCurrentParticipants()));
         holder.priceOfEventTxt.setText(event.getCurrency() + " " + String.valueOf(event.getPrice()));
-
         // Formatação das datas
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         holder.startDateTxt.setText(dateFormat.format(event.getStartDate()));
         holder.endDateTxt.setText(dateFormat.format(event.getEndDate()));
-
         // Uso do Glide para carregar a imagem do thumbnail
         Glide.with(holder.itemView.getContext())
                 .load(event.getPointOfInterest().getThumbnail())
                 .into(holder.thumbnailImg);
-    }
 
+        // Adicione o OnClickListener
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+//            intent.putExtra("userId", event.getUserId());
+//            intent.putExtra("userIdReq", event.getUserIdReq());
+//            intent.putExtra("calendarIdReq", event.getCalendarIdReq());
+            intent.putExtra("eventId", event.getId());
+            context.startActivity(intent);
+        });
+    }
     @Override
     public int getItemCount() {
         return items.size();
