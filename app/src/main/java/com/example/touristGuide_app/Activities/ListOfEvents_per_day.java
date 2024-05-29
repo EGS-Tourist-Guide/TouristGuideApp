@@ -1,12 +1,15 @@
 package com.example.touristGuide_app.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,7 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.touristGuide_app.Adapters.ListEventsAdapter_per_day;
 import com.example.touristGuide_app.Domains.ListEventsDomain_per_day;
@@ -36,7 +42,11 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class ListOfEvents_per_day extends AppCompatActivity {
+public class ListOfEvents_per_day extends AppCompatActivity implements ListEventsAdapter_per_day.OnEventClickListener {
+    private String name, organizer, category, contact, about, currency, poiId;
+    private Date startDate, endDate;
+    private double price;
+    private int maxParticipants, currentParticipants, favorites;
     private RecyclerView.Adapter adapterPopular;
     private RecyclerView recyclerViewPopular;
     private String serverIp;
@@ -62,12 +72,12 @@ public class ListOfEvents_per_day extends AppCompatActivity {
         serverIp = getString(R.string.ip);
 
         System.out.println("No list of event per day -> userId: " + userId + " calendarId: " + calendarId + " currentDay: " + currentDay + " eventIds: " + eventIds);
+
         initRecyclerView();
         Log.d("API_RESPONSE", "passou aqui3: ");
     }
 
     private void initRecyclerView() {
-        ////////////////////////////changeAccountIcon Menu Icon
         // Change Account Icon (Floating Action Button)
         FloatingActionButton changeAccountIcon = findViewById(R.id.changeAccountIcon);
         changeAccountIcon.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +114,7 @@ public class ListOfEvents_per_day extends AppCompatActivity {
         });
         recyclerViewPopular = findViewById(R.id.viewEvent);
         recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
-        adapterPopular = new ListEventsAdapter_per_day(this, new ArrayList<>());
+        adapterPopular = new ListEventsAdapter_per_day(this, new ArrayList<>(), this);
         recyclerViewPopular.setAdapter(adapterPopular);
 
         fetchEventsFromAPI();
@@ -129,13 +139,13 @@ public class ListOfEvents_per_day extends AppCompatActivity {
 
                             // Only process if the event ID is in the list of event IDs passed to this activity
                             if (eventIds.contains(id)) {
-                                String name = eventObject.getString("name");
-                                String organizer = eventObject.getString("organizer");
-                                String category = eventObject.getString("category");
-                                String contact = eventObject.getString("contact");
+                                name = eventObject.getString("name");
+                                organizer = eventObject.getString("organizer");
+                                category = eventObject.getString("category");
+                                contact = eventObject.getString("contact");
 
-                                Date startDate = null;
-                                Date endDate = null;
+                                startDate = null;
+                                endDate = null;
                                 try {
                                     startDate = dateFormat.parse(eventObject.getString("startdate"));
                                     endDate = dateFormat.parse(eventObject.getString("enddate"));
@@ -145,13 +155,13 @@ public class ListOfEvents_per_day extends AppCompatActivity {
                                     Toast.makeText(ListOfEvents_per_day.this, "Erro ao analisar a data", Toast.LENGTH_SHORT).show();
                                 }
 
-                                String about = eventObject.getString("about");
-                                double price = eventObject.getDouble("price");
-                                String currency = eventObject.getString("currency");
-                                int maxParticipants = eventObject.getInt("maxparticipants");
-                                int currentParticipants = eventObject.getInt("currentparticipants");
-                                int favorites = eventObject.getInt("favorites");
-                                String poiId = eventObject.getString("pointofinterestid");
+                                about = eventObject.getString("about");
+                                price = eventObject.getDouble("price");
+                                currency = eventObject.getString("currency");
+                                maxParticipants = eventObject.getInt("maxparticipants");
+                                currentParticipants = eventObject.getInt("currentparticipants");
+                                favorites = eventObject.getInt("favorites");
+                                poiId = eventObject.getString("pointofinterestid");
 
                                 JSONObject poiObject = eventObject.getJSONObject("pointofinterest");
                                 PointOfInterestDomain pointOfInterest = new PointOfInterestDomain(
@@ -230,9 +240,115 @@ public class ListOfEvents_per_day extends AppCompatActivity {
     private void initRecyclerEVENTsView(ArrayList<ListEventsDomain_per_day> events) {
         recyclerViewPopular = findViewById(R.id.viewEvent);
         recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
-        adapterPopular = new ListEventsAdapter_per_day(this, events);
+        adapterPopular = new ListEventsAdapter_per_day(this, events, this);
         recyclerViewPopular.setAdapter(adapterPopular);
         Log.d("API_RESPONSE", "RecyclerView initialized with events: " + events.size());
     }
-}
 
+    private void updateFavoriteStatus(String eventId, boolean isFavorite) {
+        String url = "http://" + serverIp + "/e1/events/" + eventId + "/favorite";
+        String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
+
+        Log.d("DetailActivity", "eventId: " + eventId);
+        Log.d("DetailActivity", "calendarIdReq: " + calendarId);
+        Log.d("DetailActivity", "userIdReq: " + userId);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("userid", String.valueOf(userId));
+            requestBody.put("calendarid", String.valueOf(calendarId));
+            requestBody.put("favoritestatus", isFavorite);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to create JSON request body", Toast.LENGTH_SHORT).show();
+            Log.e("DetailActivity", "Failed to create JSON request body");
+            return;
+        }
+
+        Log.d("DetailActivity", "Request URL: " + url);
+        Log.d("DetailActivity", "Request Body: " + requestBody.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.PATCH, url, requestBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("DetailActivity", "Response received: " + response.toString());
+                        Toast.makeText(ListOfEvents_per_day.this, "Favorite status updated successfully", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("DetailActivity", "Error: " + error.toString());
+                        handleErrorResponse(error);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("accept", "application/json");
+                headers.put("SERVICE-API-KEY", apiKey);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        queue.add(jsonObjectRequest);
+    }
+
+    @Override
+    public void onEventClick(int position) {
+        ListEventsDomain_per_day event = ((ListEventsAdapter_per_day) adapterPopular).getEvent(position);
+        String eventId = event.getId();
+        updateFavoriteStatus(eventId, false); // Assuming event has a method isFavorite()
+    }
+
+    private void handleErrorResponse(VolleyError error) {
+        if (error.networkResponse != null) {
+            int statusCode = error.networkResponse.statusCode;
+            String errorMessage = new String(error.networkResponse.data);
+            Log.e("DetailActivity", "Status Code: " + statusCode);
+            Log.e("DetailActivity", "Error response: " + errorMessage);
+
+            try {
+                JSONObject errorJson = new JSONObject(errorMessage);
+                if (errorJson.has("error")) {
+                    JSONObject errorObject = errorJson.getJSONObject("error");
+                    String message = errorObject.getString("message");
+
+                    switch (statusCode) {
+                        case 400:
+                            Toast.makeText(ListOfEvents_per_day.this, "Erro 400: Bad Request - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 401:
+                            Toast.makeText(ListOfEvents_per_day.this, "Erro 401: Não autorizado - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 404:
+                            Toast.makeText(ListOfEvents_per_day.this, "Erro 404: Recurso não encontrado - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 500:
+                            Toast.makeText(ListOfEvents_per_day.this, "Erro 500: Erro interno do servidor - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 502:
+                            Toast.makeText(ListOfEvents_per_day.this, "Erro 502: Bad Gateway - " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            Toast.makeText(ListOfEvents_per_day.this, "Erro " + statusCode + ": " + message, Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                } else {
+                    Toast.makeText(ListOfEvents_per_day.this, "Erro JSON inesperado: " + errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(ListOfEvents_per_day.this, "Erro ao processar resposta de erro JSON", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.e("DetailActivity", "Network error occurred", error);
+            Toast.makeText(ListOfEvents_per_day.this, "Updated with sucess, confirm on calendar.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}

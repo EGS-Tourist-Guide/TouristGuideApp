@@ -23,17 +23,19 @@ import java.util.Locale;
 public class ListEventsAdapter_per_day extends RecyclerView.Adapter<ListEventsAdapter_per_day.ViewHolder> {
     ArrayList<ListEventsDomain_per_day> items;
     Context context;
+    OnEventClickListener onEventClickListener;
 
-    public ListEventsAdapter_per_day(Context context, ArrayList<ListEventsDomain_per_day> items) {
+    public ListEventsAdapter_per_day(Context context, ArrayList<ListEventsDomain_per_day> items, OnEventClickListener onEventClickListener) {
         this.context = context;
         this.items = items;
+        this.onEventClickListener = onEventClickListener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_events_per_day, parent, false);
-        return new ViewHolder(inflate);
+        return new ViewHolder(inflate, onEventClickListener);
     }
 
     @Override
@@ -57,16 +59,23 @@ public class ListEventsAdapter_per_day extends RecyclerView.Adapter<ListEventsAd
                 .load(event.getPointOfInterest().getThumbnail())
                 .into(holder.thumbnailImg);
     }
+
     @Override
     public int getItemCount() {
         return items.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public ListEventsDomain_per_day getEvent(int position) {
+        return items.get(position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView titleTxt, organizerTxt, aboutTxt, locationTxt, contactTxt, categoryOfPoiTxt, maxParticipantsTxt, currentParticipantsTxt, priceOfEventTxt, startDateTxt, endDateTxt;
         ImageView thumbnailImg;
+        ImageView favoritesIcon;
+        OnEventClickListener onEventClickListener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, OnEventClickListener onEventClickListener) {
             super(itemView);
             titleTxt = itemView.findViewById(R.id.nameTxt);
             organizerTxt = itemView.findViewById(R.id.organizer_txt);
@@ -80,7 +89,21 @@ public class ListEventsAdapter_per_day extends RecyclerView.Adapter<ListEventsAd
             startDateTxt = itemView.findViewById(R.id.startDateTxt);
             endDateTxt = itemView.findViewById(R.id.endDateTxt);
             thumbnailImg = itemView.findViewById(R.id.thumbnailImg);
+            favoritesIcon = itemView.findViewById(R.id.favorites_icon);
+
+            this.onEventClickListener = onEventClickListener;
+            favoritesIcon.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            onEventClickListener.onEventClick(getAdapterPosition());
         }
     }
+
+    public interface OnEventClickListener {
+        void onEventClick(int position);
+    }
 }
+
 

@@ -103,15 +103,9 @@ public class DetailActivity extends AppCompatActivity {
                                     // Start the CalendarEmpty activity and pass event details as extras
                                     Intent intent = new Intent(DetailActivity.this, CalendarEmpty.class);
                                     intent.putExtra("startDate", startDate);
-                                    Log.d("DetailActivity", "Passing startDate: " + startDate);
-                                    intent.putExtra("endDate", startDate);
-                                    Log.d("DetailActivity", "Passing endDate: " + startDate);
+                                    intent.putExtra("endDate", endDate);
                                     intent.putExtra("userIdReq", userIdReq);
-                                    Log.d("DetailActivity", "Passing userIdReq: " + userIdReq);
                                     intent.putExtra("calendarIdReq", calendarIdReq);
-                                    Log.d("DetailActivity", "Passing calendarIdReq: " + calendarIdReq);
-//                                    intent.putExtra("eventId", eventId);
-//                                    Log.d("DetailActivity", "Passing eventId: " + eventId);
                                     intent.putExtra("fromDetailActivity", true);
 
                                     Log.d("DetailActivity", "Starting CalendarEmpty activity");
@@ -190,7 +184,6 @@ public class DetailActivity extends AppCompatActivity {
         String url = "http://grupo4-egs-deti.ua.pt/e1/events/" + eventId + "/favorite";
         String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
 
-        Log.d("DetailActivity", "eventId: " + eventId);
         Log.d("DetailActivity", "calendarIdReq: " + calendarIdReq);
         Log.d("DetailActivity", "userIdReq: " + userIdReq);
 
