@@ -41,7 +41,21 @@ public class ListEventsAdapter_per_day extends RecyclerView.Adapter<ListEventsAd
         ListEventsDomain_per_day event = items.get(position);
 
         holder.titleTxt.setText(event.getName());
+        holder.organizerTxt.setText(event.getOrganizer());
+        holder.aboutTxt.setText(event.getAbout());
+        holder.locationTxt.setText(event.getPointOfInterest().getLocationName());
+        holder.contactTxt.setText(event.getContact());
+        holder.categoryOfPoiTxt.setText(event.getCategory());
+        holder.maxParticipantsTxt.setText(String.valueOf(event.getMaxParticipants()));
+        holder.currentParticipantsTxt.setText(String.valueOf(event.getCurrentParticipants()));
+        holder.priceOfEventTxt.setText(String.format("%s %.2f", event.getCurrency(), event.getPrice()));
+        holder.startDateTxt.setText(event.getStartDate().toString());
+        holder.endDateTxt.setText(event.getEndDate().toString());
 
+        // Use Glide or Picasso to load images
+        Glide.with(context)
+                .load(event.getPointOfInterest().getThumbnail())
+                .into(holder.thumbnailImg);
     }
     @Override
     public int getItemCount() {
