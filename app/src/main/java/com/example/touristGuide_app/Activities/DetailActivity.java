@@ -110,8 +110,8 @@ public class DetailActivity extends AppCompatActivity {
                                     Log.d("DetailActivity", "Passing userIdReq: " + userIdReq);
                                     intent.putExtra("calendarIdReq", calendarIdReq);
                                     Log.d("DetailActivity", "Passing calendarIdReq: " + calendarIdReq);
-                                    intent.putExtra("eventId", eventId);
-                                    Log.d("DetailActivity", "Passing eventId: " + eventId);
+//                                    intent.putExtra("eventId", eventId);
+//                                    Log.d("DetailActivity", "Passing eventId: " + eventId);
                                     intent.putExtra("fromDetailActivity", true);
 
                                     Log.d("DetailActivity", "Starting CalendarEmpty activity");

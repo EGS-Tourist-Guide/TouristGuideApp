@@ -40,7 +40,6 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     private String startDateString, endDateString;
     private int userIdReq;
     private int calendarIdReq;
-    private String eventId;
     private LocalDate newLocalDate;
     public static List<String> savingDatesByID = new ArrayList<>();
     private RequestQueue requestQueue;
@@ -52,38 +51,30 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         initWidgets();
         CalendarUtils.selectedDate = LocalDate.now();
         setMonthView();
-
         // Initialize Volley request queue
         requestQueue = Volley.newRequestQueue(this);
-
         fetchEventData();
     }
-
     private void initWidgets() {
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
         monthYearText = findViewById(R.id.monthYearTV);
     }
-
     private void setMonthView() {
         monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
         ArrayList<LocalDate> daysInMonth = daysInMonthArray(CalendarUtils.selectedDate);
         CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
-
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
     }
-
     public void previousMonthAction(View view) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusMonths(1);
         setMonthView();
     }
-
     public void nextMonthAction(View view) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusMonths(1);
         setMonthView();
     }
-
     public void weeklyAction(View view) {
         startActivity(new Intent(this, WeekViewActivity.class));
     }
@@ -92,13 +83,13 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     public void onItemClick(int position, LocalDate date) {
         if (date != null) {
             Log.d("CalendarEmpty", "Date clicked: " + date.toString());
-            // Start EventDetailActivity and pass the necessary data
-            Intent intent = new Intent(this, EventDetailActivity.class);
+
+            // Start ListOfEventsPerDay and pass the necessary data
+            Intent intent = new Intent(this, ListOfEvents_per_day.class);
             intent.putExtra("calendarIdReq", calendarIdReq);
             intent.putExtra("userIdReq", userIdReq);
-            intent.putExtra("eventId", eventId);
-            Log.d("DetailActivity", "Passing eventId: " + eventId);
-            intent.putExtra("currentDate", date.toString()); // Pass the clicked date as startDate
+            intent.putExtra("currentDate", date.toString()); // Pass the clicked date as currentDate
+            System.out.println("No calendar empty -> userId: " + userIdReq + " calendarId: " + calendarIdReq + " currentDay: " + date.toString());
             startActivity(intent);
         }
     }
@@ -115,8 +106,6 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
             if (intent != null) {
                 startDateString = intent.getStringExtra("startDate");
                 endDateString = intent.getStringExtra("endDate");
-                eventId = intent.getStringExtra("eventId");
-                Log.d("CalendarEmpty", "Received eventId: " + eventId);
 
                 Log.d("CalendarEmpty", "Received startDate: " + startDateString);
                 Log.d("CalendarEmpty", "Received endDate: " + endDateString);
@@ -189,4 +178,3 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         }
     }
 }
-
