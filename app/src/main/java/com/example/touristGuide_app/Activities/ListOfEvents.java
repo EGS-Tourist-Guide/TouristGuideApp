@@ -19,6 +19,7 @@ import com.example.touristGuide_app.Adapters.ListEventsAdapter;
 import com.example.touristGuide_app.Domains.ListEventsDomain;
 import com.example.touristGuide_app.Domains.PointOfInterestDomain;
 import com.example.touristGuide_app.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +38,6 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
     private RecyclerView.Adapter adapterPopular;
     private RecyclerView recyclerViewPopular;
     private String serverIp;
-    private String userId;
     private int userIdReq;
     private int calendarIdReq;
     @Override
@@ -46,13 +46,13 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         setContentView(R.layout.list_of_events);
 
         Intent intent = getIntent();
-        userId = intent.getStringExtra("userId");
         userIdReq = intent.getIntExtra("userIdReq", 0);
         calendarIdReq = intent.getIntExtra("calendarIdReq", 0);
+        System.out.println("userIdAndCalendarId "+ userIdReq +" " + calendarIdReq);
 
         serverIp = getString(R.string.ip);
 
-        System.out.println("userId: " + userId + " userIdReq: " + userIdReq + " calendarIdReq: " + calendarIdReq);
+        System.out.println("userIdReq: " + userIdReq + " calendarIdReq: " + calendarIdReq);
         initRecyclerView();
         Log.d("API_RESPONSE", "passou aqui3: " );
     }
@@ -60,20 +60,42 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         //////////////FILTROS
         ConstraintLayout filterLayout = findViewById(R.id.btnFiltros);
         filterLayout.setOnClickListener(this::onFilterButtonClick);
-        ////////////////////////////Person Menu Icon
+        ////////////////////////////changeAccountIcon Menu Icon
+        // Change Account Icon (Floating Action Button)
+        FloatingActionButton changeAccountIcon = findViewById(R.id.changeAccountIcon);
+        changeAccountIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ListOfEvents.this, Login.class);
+                startActivity(intent);
+            }
+        });
+
+        // Home Icon
+        LinearLayout homeIcon = findViewById(R.id.homeIcon);
+        homeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to home activity or handle home icon click
+                // Assuming you have a MainActivity for home
+                Intent intent = new Intent(ListOfEvents.this, ListOfPointOfInterest.class);
+                startActivity(intent);
+            }
+        });
+
+        // My Calendar Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navegar para a página de calendários
                 Intent intent = new Intent(ListOfEvents.this, CalendarEmpty.class);
                 intent.putExtra("fromDetailActivity", false);
-                intent.putExtra("userId", userId);
                 intent.putExtra("userIdReq", userIdReq);
                 intent.putExtra("calendarIdReq", calendarIdReq);
                 startActivity(intent);
             }
         });
+
         //////////////////////////// EVENTs
         fetchEventsFromAPI();
     }
@@ -171,7 +193,7 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
                                     poiObject.getString("thumbnail")
                             );
 
-                            events.add(new ListEventsDomain(id, name, organizer, category, contact, startDate, endDate, about, price, currency, maxParticipants, currentParticipants, favorites, poiId, pointOfInterest, "pic1", userId, userIdReq, calendarIdReq));
+                            events.add(new ListEventsDomain(id, name, organizer, category, contact, startDate, endDate, about, price, currency, maxParticipants, currentParticipants, favorites, poiId, pointOfInterest, "pic1", userIdReq, calendarIdReq));
                         }
 
                         runOnUiThread(() -> initRecyclerEVENTsView(events));

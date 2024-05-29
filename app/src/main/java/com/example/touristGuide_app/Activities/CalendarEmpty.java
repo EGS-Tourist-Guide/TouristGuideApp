@@ -41,7 +41,7 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     private int userIdReq;
     private int calendarIdReq;
     private LocalDate newLocalDate;
-    public static List<String> savingDatesByID = new ArrayList<>();
+    public static Map<String, List<String>> savingDatesWithIDs = new HashMap<>();
     private RequestQueue requestQueue;
 
     @Override
@@ -55,10 +55,12 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         requestQueue = Volley.newRequestQueue(this);
         fetchEventData();
     }
+
     private void initWidgets() {
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
         monthYearText = findViewById(R.id.monthYearTV);
     }
+
     private void setMonthView() {
         monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
         ArrayList<LocalDate> daysInMonth = daysInMonthArray(CalendarUtils.selectedDate);
@@ -67,14 +69,17 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
     }
+
     public void previousMonthAction(View view) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusMonths(1);
         setMonthView();
     }
+
     public void nextMonthAction(View view) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusMonths(1);
         setMonthView();
     }
+
     public void weeklyAction(View view) {
         startActivity(new Intent(this, WeekViewActivity.class));
     }
@@ -84,11 +89,15 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         if (date != null) {
             Log.d("CalendarEmpty", "Date clicked: " + date.toString());
 
+            // Retrieve the list of event IDs for the clicked date
+            List<String> eventIds = savingDatesWithIDs.get(date.toString());
+
             // Start ListOfEventsPerDay and pass the necessary data
             Intent intent = new Intent(this, ListOfEvents_per_day.class);
             intent.putExtra("calendarIdReq", calendarIdReq);
             intent.putExtra("userIdReq", userIdReq);
             intent.putExtra("currentDate", date.toString()); // Pass the clicked date as currentDate
+            intent.putStringArrayListExtra("eventIds", new ArrayList<>(eventIds));
             System.out.println("No calendar empty -> userId: " + userIdReq + " calendarId: " + calendarIdReq + " currentDay: " + date.toString());
             startActivity(intent);
         }
@@ -153,12 +162,13 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
 
     private void parseAndSaveEventData(JSONArray jsonArray) {
         try {
-            savingDatesByID.clear();
+            savingDatesWithIDs.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonData = jsonArray.getJSONObject(i);
 
                 String startDate = jsonData.getString("startdate");
                 String endDate = jsonData.getString("enddate");
+                String eventId = jsonData.getString("_id");
 
                 // Convert string dates to LocalDate
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -167,10 +177,15 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
 
                 // Add all dates between start and end dates
                 while (!startLocalDate.isAfter(endLocalDate)) {
-                    savingDatesByID.add(startLocalDate.toString());
+                    String dateKey = startLocalDate.toString();
+                    if (!savingDatesWithIDs.containsKey(dateKey)) {
+                        savingDatesWithIDs.put(dateKey, new ArrayList<>());
+                    }
+                    savingDatesWithIDs.get(dateKey).add(eventId);
                     startLocalDate = startLocalDate.plusDays(1);
                 }
             }
+            System.out.println("savingDatesWithIDs: " + savingDatesWithIDs);
             setMonthView();
         } catch (Exception e) {
             e.printStackTrace();

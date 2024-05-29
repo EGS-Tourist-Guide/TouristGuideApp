@@ -204,10 +204,9 @@ public class Login extends AppCompatActivity {
     // Método para abrir a próxima página após o login bem-sucedido
     private void openMainRoom(String userId, int userIdReq, int calendarIdReq) {
         Intent intent = new Intent(this, ListOfPointOfInterest.class);
-        intent.putExtra("userId", userId);
         intent.putExtra("userIdReq", userIdReq);
         intent.putExtra("calendarIdReq", calendarIdReq);
-        Toast.makeText(this, "Enviou id "+ userId+" para MainActivity\nuserId: "+userIdReq+"\ncalendarId: " + calendarIdReq, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Enviou para MainActivity userId: "+userIdReq+" calendarId: " + calendarIdReq, Toast.LENGTH_SHORT).show();
         startActivity(intent);
     }
 

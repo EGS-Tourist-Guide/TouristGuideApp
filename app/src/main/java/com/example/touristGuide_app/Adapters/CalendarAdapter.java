@@ -1,5 +1,4 @@
 package com.example.touristGuide_app.Adapters;
-import static com.example.touristGuide_app.Activities.CalendarEmpty.savingDatesByID;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -14,10 +13,7 @@ import com.example.touristGuide_app.Activities.CalendarViewHolder;
 import com.example.touristGuide_app.R;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     private final ArrayList<LocalDate> days;
@@ -48,8 +44,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
             holder.dayOfMonth.setText("");
         else {
             holder.dayOfMonth.setText(String.valueOf(date.getDayOfMonth()));
-            // Check if the date is within the range of any saved dates
-            if (CalendarEmpty.savingDatesByID.contains(date.toString())) {
+            // Check if the date has associated event IDs
+            if (CalendarEmpty.savingDatesWithIDs.containsKey(date.toString())) {
                 holder.parentView.setBackgroundColor(Color.RED);
             }
         }
@@ -64,4 +60,5 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
         void onItemClick(int position, LocalDate date);
     }
 }
+
 

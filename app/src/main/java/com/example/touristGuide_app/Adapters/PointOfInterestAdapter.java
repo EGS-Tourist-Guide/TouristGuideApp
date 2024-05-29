@@ -18,13 +18,11 @@ import java.util.ArrayList;
 
 public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterestAdapter.ViewHolder> {
     ArrayList<PointOfInterestDomain> items;
-    private String userId;
     private int userIdReq;
     private int calendarIdReq;
 
-    public PointOfInterestAdapter(ArrayList<PointOfInterestDomain> items, String userId, int userIdReq, int calendarIdReq) {
+    public PointOfInterestAdapter(ArrayList<PointOfInterestDomain> items, int userIdReq, int calendarIdReq) {
         this.items = items;
-        this.userId = userId;
         this.userIdReq = userIdReq;
         this.calendarIdReq = calendarIdReq;
     }
@@ -64,7 +62,6 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), ListOfEvents.class);
-            intent.putExtra("userId", userId);
             intent.putExtra("userIdReq", userIdReq);
             intent.putExtra("calendarIdReq", calendarIdReq);
 

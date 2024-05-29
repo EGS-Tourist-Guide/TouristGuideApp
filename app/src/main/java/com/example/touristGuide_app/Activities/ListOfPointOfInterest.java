@@ -24,6 +24,7 @@ import com.example.touristGuide_app.Adapters.PointOfInterestAdapter;
 import com.example.touristGuide_app.Domains.CategoryDomain;
 import com.example.touristGuide_app.Domains.PointOfInterestDomain;
 import com.example.touristGuide_app.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -42,7 +43,6 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
     private RecyclerView recyclerViewCategory;
     private EditText searchBarMain;
     String serverIp;
-    private String userId = "0";
     private int userIdReq = 0, calendarIdReq = 0;
     private String selectedCategory = null; // Categoria selecionada
     private double selectedLatitude = 0, selectedLongitude = 0;
@@ -53,7 +53,6 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_of_pois);
         serverIp = getString(R.string.ip);
-        userId = getIntent().getStringExtra("userId");
         userIdReq = getIntent().getIntExtra("userIdReq",0);
         calendarIdReq = getIntent().getIntExtra("calendarIdReq",0);
         searchBarMain = findViewById(R.id.search_bar_main);
@@ -98,12 +97,35 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapterCategory = new CategoryAdapter(catsList, this);
         recyclerViewCategory.setAdapter(adapterCategory);
-        //////////////////////////// Person Menu Icon
+
+        ////////////////////////////changeAccountIcon Menu Icon
+        // Change Account Icon (Floating Action Button)
+        FloatingActionButton changeAccountIcon = findViewById(R.id.changeAccountIcon);
+        changeAccountIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ListOfPointOfInterest.this, Login.class);
+                startActivity(intent);
+            }
+        });
+
+        // Home Icon
+        LinearLayout homeIcon = findViewById(R.id.homeIcon);
+        homeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to home activity or handle home icon click
+                // Assuming you have a MainActivity for home
+                Intent intent = new Intent(ListOfPointOfInterest.this, ListOfPointOfInterest.class);
+                startActivity(intent);
+            }
+        });
+
+        // My Calendar Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navegar para a página de calendários
                 Intent intent = new Intent(ListOfPointOfInterest.this, CalendarEmpty.class);
                 intent.putExtra("fromDetailActivity", false);
                 intent.putExtra("userIdReq", userIdReq);
@@ -163,7 +185,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         // Configura o RecyclerView e o adaptador após receber os POIs
         recyclerViewPoi = findViewById(R.id.recyclerViewPoi);
         recyclerViewPoi.setLayoutManager(new LinearLayoutManager(this));
-        adapterPoi = new PointOfInterestAdapter(pois, userId, userIdReq, calendarIdReq);
+        adapterPoi = new PointOfInterestAdapter(pois, userIdReq, calendarIdReq);
         recyclerViewPoi.setAdapter(adapterPoi);
         // Aqui você pode adicionar prints para verificar se os POIs foram recebidos corretamente
         Log.d("ListOfPointOfInterest", "POIs recebidos: " + pois.size());

@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,6 +20,7 @@ import com.example.touristGuide_app.Adapters.ListEventsAdapter_per_day;
 import com.example.touristGuide_app.Domains.ListEventsDomain_per_day;
 import com.example.touristGuide_app.Domains.PointOfInterestDomain;
 import com.example.touristGuide_app.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,20 +36,19 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class ListOfEvents_per_day extends AppCompatActivity  {
+public class ListOfEvents_per_day extends AppCompatActivity {
     private RecyclerView.Adapter adapterPopular;
     private RecyclerView recyclerViewPopular;
     private String serverIp;
     private int userId;
     private int calendarId;
-    private String eventId, currentDay;
+    private String currentDay;
     private List<String> eventIds;
     private RequestQueue requestQueue;
     private String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        System.out.println("AHHHHHHHHHHHHIN?");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_of_events_per_day);
 
@@ -57,23 +56,45 @@ public class ListOfEvents_per_day extends AppCompatActivity  {
         requestQueue = Volley.newRequestQueue(this);
         calendarId = intent.getIntExtra("calendarIdReq", 0);
         userId = intent.getIntExtra("userIdReq", 0);
-        currentDay =intent.getStringExtra("currentDate");
+        currentDay = intent.getStringExtra("currentDate");
+        eventIds = intent.getStringArrayListExtra("eventIds");
 
         serverIp = getString(R.string.ip);
 
-        System.out.println("No list of event per day -> userId: " + userId + " calendarId: " + calendarId + "currentDay: "+currentDay);
+        System.out.println("No list of event per day -> userId: " + userId + " calendarId: " + calendarId + " currentDay: " + currentDay + " eventIds: " + eventIds);
         initRecyclerView();
-        Log.d("API_RESPONSE", "passou aqui3: " );
+        Log.d("API_RESPONSE", "passou aqui3: ");
     }
+
     private void initRecyclerView() {
-        //////////////FILTROS
-        ConstraintLayout filterLayout = findViewById(R.id.btnFiltros);
-        ////////////////////////////Person Menu Icon
+        ////////////////////////////changeAccountIcon Menu Icon
+        // Change Account Icon (Floating Action Button)
+        FloatingActionButton changeAccountIcon = findViewById(R.id.changeAccountIcon);
+        changeAccountIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ListOfEvents_per_day.this, Login.class);
+                startActivity(intent);
+            }
+        });
+
+        // Home Icon
+        LinearLayout homeIcon = findViewById(R.id.homeIcon);
+        homeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to home activity or handle home icon click
+                // Assuming you have a MainActivity for home
+                Intent intent = new Intent(ListOfEvents_per_day.this, ListOfPointOfInterest.class);
+                startActivity(intent);
+            }
+        });
+
+        // My Calendar Icon
         LinearLayout myCalendarLayout = findViewById(R.id.myCalendar);
         myCalendarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navegar para a página de calendários
                 Intent intent = new Intent(ListOfEvents_per_day.this, CalendarEmpty.class);
                 intent.putExtra("fromDetailActivity", false);
                 intent.putExtra("userIdReq", userId);
@@ -81,18 +102,14 @@ public class ListOfEvents_per_day extends AppCompatActivity  {
                 startActivity(intent);
             }
         });
-        //////////////////////////// EVENTs
+        recyclerViewPopular = findViewById(R.id.viewEvent);
+        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
+        adapterPopular = new ListEventsAdapter_per_day(this, new ArrayList<>());
+        recyclerViewPopular.setAdapter(adapterPopular);
+
         fetchEventsFromAPI();
     }
 
-
-    private void initRecyclerEVENTsView(ArrayList<ListEventsDomain_per_day> events) {
-        recyclerViewPopular = findViewById(R.id.viewEvent);
-        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
-        adapterPopular = new ListEventsAdapter_per_day(this, events);
-        recyclerViewPopular.setAdapter(adapterPopular);
-        Log.d("API_RESPONSE", "RecyclerView initialized with events: " + events.size());
-    }
     private void fetchEventsFromAPI() {
         String url = "http://" + serverIp + "/e1/events?limit=25&offset=0";
         String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
@@ -109,45 +126,49 @@ public class ListOfEvents_per_day extends AppCompatActivity  {
 
                             // Extract and parse the data from JSON
                             String id = eventObject.getString("_id");
-                            String name = eventObject.getString("name");
-                            String organizer = eventObject.getString("organizer");
-                            String category = eventObject.getString("category");
-                            String contact = eventObject.getString("contact");
 
-                            Date startDate = null;
-                            Date endDate = null;
-                            try {
-                                startDate = dateFormat.parse(eventObject.getString("startdate"));
-                                endDate = dateFormat.parse(eventObject.getString("enddate"));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                                Log.e("DATE_FORMAT_ERROR", "Erro ao analisar a data", e);
-                                Toast.makeText(ListOfEvents_per_day.this, "Erro ao analisar a data", Toast.LENGTH_SHORT).show();
+                            // Only process if the event ID is in the list of event IDs passed to this activity
+                            if (eventIds.contains(id)) {
+                                String name = eventObject.getString("name");
+                                String organizer = eventObject.getString("organizer");
+                                String category = eventObject.getString("category");
+                                String contact = eventObject.getString("contact");
+
+                                Date startDate = null;
+                                Date endDate = null;
+                                try {
+                                    startDate = dateFormat.parse(eventObject.getString("startdate"));
+                                    endDate = dateFormat.parse(eventObject.getString("enddate"));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                    Log.e("DATE_FORMAT_ERROR", "Erro ao analisar a data", e);
+                                    Toast.makeText(ListOfEvents_per_day.this, "Erro ao analisar a data", Toast.LENGTH_SHORT).show();
+                                }
+
+                                String about = eventObject.getString("about");
+                                double price = eventObject.getDouble("price");
+                                String currency = eventObject.getString("currency");
+                                int maxParticipants = eventObject.getInt("maxparticipants");
+                                int currentParticipants = eventObject.getInt("currentparticipants");
+                                int favorites = eventObject.getInt("favorites");
+                                String poiId = eventObject.getString("pointofinterestid");
+
+                                JSONObject poiObject = eventObject.getJSONObject("pointofinterest");
+                                PointOfInterestDomain pointOfInterest = new PointOfInterestDomain(
+                                        poiObject.optString("_id", ""),
+                                        poiObject.getString("name"),
+                                        poiObject.getString("location"),
+                                        poiObject.getDouble("latitude"),
+                                        poiObject.getDouble("longitude"),
+                                        poiObject.optString("street", ""),
+                                        poiObject.optString("postcode", ""),
+                                        poiObject.getString("description"),
+                                        poiObject.getString("category"),
+                                        poiObject.getString("thumbnail")
+                                );
+
+                                events.add(new ListEventsDomain_per_day(id, name, organizer, category, contact, startDate, endDate, about, price, currency, maxParticipants, currentParticipants, favorites, poiId, pointOfInterest, "pic1", userId, calendarId));
                             }
-
-                            String about = eventObject.getString("about");
-                            double price = eventObject.getDouble("price");
-                            String currency = eventObject.getString("currency");
-                            int maxParticipants = eventObject.getInt("maxparticipants");
-                            int currentParticipants = eventObject.getInt("currentparticipants");
-                            int favorites = eventObject.getInt("favorites");
-                            String poiId = eventObject.getString("pointofinterestid");
-
-                            JSONObject poiObject = eventObject.getJSONObject("pointofinterest");
-                            PointOfInterestDomain pointOfInterest = new PointOfInterestDomain(
-                                    poiObject.optString("_id", ""),
-                                    poiObject.getString("name"),
-                                    poiObject.getString("location"),
-                                    poiObject.getDouble("latitude"),
-                                    poiObject.getDouble("longitude"),
-                                    poiObject.optString("street", ""),
-                                    poiObject.optString("postcode", ""),
-                                    poiObject.getString("description"),
-                                    poiObject.getString("category"),
-                                    poiObject.getString("thumbnail")
-                            );
-
-                            events.add(new ListEventsDomain_per_day(id, name, organizer, category, contact, startDate, endDate, about, price, currency, maxParticipants, currentParticipants, favorites, poiId, pointOfInterest, "pic1", userId, calendarId));
                         }
 
                         runOnUiThread(() -> initRecyclerEVENTsView(events));
@@ -202,6 +223,16 @@ public class ListOfEvents_per_day extends AppCompatActivity  {
                 return headers;
             }
         };
-        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonArrayRequest);
+
+        requestQueue.add(jsonArrayRequest);
+    }
+
+    private void initRecyclerEVENTsView(ArrayList<ListEventsDomain_per_day> events) {
+        recyclerViewPopular = findViewById(R.id.viewEvent);
+        recyclerViewPopular.setLayoutManager(new LinearLayoutManager(this));
+        adapterPopular = new ListEventsAdapter_per_day(this, events);
+        recyclerViewPopular.setAdapter(adapterPopular);
+        Log.d("API_RESPONSE", "RecyclerView initialized with events: " + events.size());
     }
 }
+
