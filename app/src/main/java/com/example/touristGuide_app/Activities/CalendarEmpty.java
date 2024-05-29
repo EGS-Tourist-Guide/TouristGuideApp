@@ -1,107 +1,37 @@
 package com.example.touristGuide_app.Activities;
-
 import static com.example.touristGuide_app.Activities.CalendarUtils.daysInMonthArray;
 import static com.example.touristGuide_app.Activities.CalendarUtils.monthYearFromDate;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.touristGuide_app.Adapters.CalendarAdapter;
 import com.example.touristGuide_app.R;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.Map;
+
 
 public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
@@ -124,14 +54,10 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
 
         // Initialize Firebase reference
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
-        System.out.println("AAAAAAqui1");
         // Initialize Volley request queue
         requestQueue = Volley.newRequestQueue(this);
-        System.out.println("AAAAAAqui2");
 
-        // Fetch data from the endpoint
-        System.out.println("AAAAAAqui3");
-
+        fetchEventData();
     }
 
     private void initWidgets() {
@@ -168,8 +94,13 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         if (date != null) {
             Log.d("CalendarEmpty", "Date clicked: " + date.toString());
 
-            DatabaseReference userRef = databaseReference.child(String.valueOf(userIdReq)).child("dates");
-            Log.d("CalendarEmpty", "User reference: " + userRef);
+            // Start EventDetailActivity and pass the necessary data
+            Intent intent = new Intent(this, EventDetailActivity.class);
+            intent.putExtra("calendarIdReq", calendarIdReq);
+            intent.putExtra("userIdReq", userIdReq);
+            intent.putExtra("currentDate", date.toString()); // Pass the clicked date as startDate
+
+            startActivity(intent);
         }
     }
 
@@ -181,11 +112,10 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         userIdReq = intent.getIntExtra("userIdReq", 0);
         calendarIdReq = intent.getIntExtra("calendarIdReq", 0);
         Toast.makeText(this, "Recebeu userIdReq: " + userIdReq + "\ncalendarIdReq: " + calendarIdReq + " no CalendarEmpty", Toast.LENGTH_SHORT).show();
-        if (getIntent().getBooleanExtra("fromDetailActivity", false)) {
+        if (intent.getBooleanExtra("fromDetailActivity", false)) {
             if (intent != null) {
                 startDateString = intent.getStringExtra("startDate");
                 endDateString = intent.getStringExtra("endDate");
-
 
                 Log.d("CalendarEmpty", "Received startDate: " + startDateString);
                 Log.d("CalendarEmpty", "Received endDate: " + endDateString);
@@ -222,15 +152,12 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         });
 
         fetchEventData();
-
     }
 
     private void fetchEventData() {
-        System.out.println("ccccccccccccccccc"+calendarIdReq);
         String url = "http://grupo4-egs-deti.ua.pt/e1/events?limit=25&offset=0&calendarid=" + calendarIdReq;
         String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
 
-        System.out.println("Entrou endpoint ");
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                 Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {

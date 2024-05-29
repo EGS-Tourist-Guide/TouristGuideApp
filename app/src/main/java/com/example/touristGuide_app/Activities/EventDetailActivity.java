@@ -1,5 +1,6 @@
 package com.example.touristGuide_app.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,32 +25,25 @@ public class EventDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
-        // Receive the event details JSON string from the Intent
-        String eventDetailsJsonString = getIntent().getStringExtra("eventDetails");
 
-        if (eventDetailsJsonString == null || eventDetailsJsonString.isEmpty()) {
-            // If event details JSON string is null or empty, log an error and finish the activity
-            Log.e("EventDetailActivity", "Event details JSON string is null or empty");
-            Toast.makeText(this, "Error: Event details JSON string is null or empty", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+
+        // Get data from the intent
+        Intent intent = getIntent();
+        int calendarId = intent.getIntExtra("calendarIdReq", 0);
+        int userId = intent.getIntExtra("userIdReq", 0);
+        String currentDate = intent.getStringExtra("currentDate");
+
+        // Use the data as needed
+//        TextView textView = findViewById(R.id.eventNameTextView); // Replace with your actual TextView id
+//        textView.setText("Calendar ID: " + calendarId + "\nUser ID: " + userId + "\ncurrent Date: " + currentDate);
+
+
 
         try {
-            // Parse the event details JSON string into a List
-            Gson gson = new Gson();
-            List<String> eventDetails = gson.fromJson(eventDetailsJsonString, new TypeToken<List<String>>() {}.getType());
-
-            // Log the event details received
-            Log.d("EventDetailActivity", "Event details: " + eventDetails);
-
-            // Display the event details
             TextView eventDetailsTextView = findViewById(R.id.eventNameTextView);
 
             StringBuilder eventDetailsStringBuilder = new StringBuilder();
-            for (String eventDetail : eventDetails) {
-                eventDetailsStringBuilder.append(eventDetail).append("\n");
-            }
+
             eventDetailsTextView.setText(eventDetailsStringBuilder.toString());
 
             // Attach click listener to the delete button
@@ -72,3 +66,4 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 }
+

@@ -106,11 +106,12 @@ public class DetailActivity extends AppCompatActivity {
                                     Log.d("DetailActivity", "Passing startDate: " + startDate);
                                     intent.putExtra("endDate", startDate);
                                     Log.d("DetailActivity", "Passing endDate: " + startDate);
-
                                     intent.putExtra("userIdReq", userIdReq);
                                     Log.d("DetailActivity", "Passing userIdReq: " + userIdReq);
                                     intent.putExtra("calendarIdReq", calendarIdReq);
                                     Log.d("DetailActivity", "Passing calendarIdReq: " + calendarIdReq);
+                                    intent.putExtra("eventId", eventId);
+                                    Log.d("DetailActivity", "Passing eventId: " + eventId);
                                     intent.putExtra("fromDetailActivity", true);
 
                                     Log.d("DetailActivity", "Starting CalendarEmpty activity");
@@ -252,7 +253,6 @@ public class DetailActivity extends AppCompatActivity {
                     String message = errorObject.getString("message");
 
                     switch (statusCode) {
-
                         case 400:
                             Toast.makeText(DetailActivity.this, "Erro 400: Bad Request - " + message, Toast.LENGTH_SHORT).show();
                             break;
