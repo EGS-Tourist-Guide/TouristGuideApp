@@ -15,6 +15,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.touristGuide_app.Adapters.CalendarAdapter;
 import com.example.touristGuide_app.R;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,10 +37,10 @@ import java.util.Map;
 public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
-    private DatabaseReference databaseReference;
     private String startDateString, endDateString;
     private int userIdReq;
     private int calendarIdReq;
+    private String eventId;
     private LocalDate newLocalDate;
     public static List<String> savingDatesByID = new ArrayList<>();
     private RequestQueue requestQueue;
@@ -52,8 +53,6 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
         CalendarUtils.selectedDate = LocalDate.now();
         setMonthView();
 
-        // Initialize Firebase reference
-        databaseReference = FirebaseDatabase.getInstance().getReference("users");
         // Initialize Volley request queue
         requestQueue = Volley.newRequestQueue(this);
 
@@ -93,13 +92,13 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
     public void onItemClick(int position, LocalDate date) {
         if (date != null) {
             Log.d("CalendarEmpty", "Date clicked: " + date.toString());
-
             // Start EventDetailActivity and pass the necessary data
             Intent intent = new Intent(this, EventDetailActivity.class);
             intent.putExtra("calendarIdReq", calendarIdReq);
             intent.putExtra("userIdReq", userIdReq);
+            intent.putExtra("eventId", eventId);
+            Log.d("DetailActivity", "Passing eventId: " + eventId);
             intent.putExtra("currentDate", date.toString()); // Pass the clicked date as startDate
-
             startActivity(intent);
         }
     }
@@ -116,6 +115,8 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
             if (intent != null) {
                 startDateString = intent.getStringExtra("startDate");
                 endDateString = intent.getStringExtra("endDate");
+                eventId = intent.getStringExtra("eventId");
+                Log.d("CalendarEmpty", "Received eventId: " + eventId);
 
                 Log.d("CalendarEmpty", "Received startDate: " + startDateString);
                 Log.d("CalendarEmpty", "Received endDate: " + endDateString);
@@ -124,32 +125,7 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
             } else {
                 Log.e("CalendarEmpty", "Intent is null");
             }
-
-            if (startDateString != null && endDateString != null) {
-                DatabaseReference userRef = databaseReference.child(String.valueOf(userIdReq)).child("dates");
-                String dateKey = startDateString + "_" + endDateString;
-                userRef.child(dateKey).child("start").setValue(startDateString);
-                userRef.child(dateKey).child("end").setValue(endDateString);
-            }
         }
-
-        DatabaseReference userRef = databaseReference.child(String.valueOf(userIdReq)).child("dates");
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                savingDatesByID.clear();
-                for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
-                    String date = dateSnapshot.getKey();
-                    savingDatesByID.add(date);
-                }
-                setMonthView();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(CalendarEmpty.this, "Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
         fetchEventData();
     }
@@ -188,27 +164,29 @@ public class CalendarEmpty extends AppCompatActivity implements CalendarAdapter.
 
     private void parseAndSaveEventData(JSONArray jsonArray) {
         try {
+            savingDatesByID.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonData = jsonArray.getJSONObject(i);
 
                 String startDate = jsonData.getString("startdate");
                 String endDate = jsonData.getString("enddate");
-                String description = jsonData.getString("about");
-                JSONObject poiObject = jsonData.getJSONObject("pointofinterest");
-                String address = poiObject.getString("street") + ", " + poiObject.getString("location");
 
-                DatabaseReference userRef = databaseReference.child(String.valueOf(userIdReq)).child("dates");
-                String dateKey = startDate + "_" + endDate;
-                userRef.child(dateKey).child("start").setValue(startDate);
-                userRef.child(dateKey).child("end").setValue(endDate);
-                userRef.child(dateKey).child("description").setValue(description);
-                userRef.child(dateKey).child("address").setValue(address);
+                // Convert string dates to LocalDate
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDate startLocalDate = LocalDate.parse(startDate, formatter);
+                LocalDate endLocalDate = LocalDate.parse(endDate, formatter);
 
-                Log.d("CalendarEmpty", "Event data saved: " + startDate + ", " + endDate + ", " + description + ", " + address);
+                // Add all dates between start and end dates
+                while (!startLocalDate.isAfter(endLocalDate)) {
+                    savingDatesByID.add(startLocalDate.toString());
+                    startLocalDate = startLocalDate.plusDays(1);
+                }
             }
+            setMonthView();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to parse JSON data", Toast.LENGTH_SHORT).show();
         }
     }
 }
+

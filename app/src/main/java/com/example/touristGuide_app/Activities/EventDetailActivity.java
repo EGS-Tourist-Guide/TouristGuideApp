@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class EventDetailActivity extends AppCompatActivity {
-
+    private String eventId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +32,9 @@ public class EventDetailActivity extends AppCompatActivity {
         int calendarId = intent.getIntExtra("calendarIdReq", 0);
         int userId = intent.getIntExtra("userIdReq", 0);
         String currentDate = intent.getStringExtra("currentDate");
+        eventId = intent.getStringExtra("eventId");
+        Log.d("CalendarEmpty", "Received eventId in EventDetailActivity: " + eventId);
+        System.out.println("userIdReqqqqqqqqqqqqqqqq: "+userId);
 
         // Use the data as needed
 //        TextView textView = findViewById(R.id.eventNameTextView); // Replace with your actual TextView id
