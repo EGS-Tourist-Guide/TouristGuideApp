@@ -40,6 +40,7 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
     private String serverIp;
     private int userIdReq;
     private int calendarIdReq;
+    private String id_poi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +49,7 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         Intent intent = getIntent();
         userIdReq = intent.getIntExtra("userIdReq", 0);
         calendarIdReq = intent.getIntExtra("calendarIdReq", 0);
+        id_poi = intent.getStringExtra("poiId");
         System.out.println("userIdAndCalendarId "+ userIdReq +" " + calendarIdReq);
 
         serverIp = getString(R.string.ip);
@@ -140,7 +142,14 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
         Log.d("API_RESPONSE", "RecyclerView initialized with events: " + events.size());
     }
     private void fetchEventsFromAPI() {
-        String url = "http://" + serverIp + "/e1/events?limit=25&offset=0";
+        String url = "http://" + serverIp + "/e1/events?limit=25&offset=0&calendarid=" + calendarIdReq;
+        System.out.println("poiiiiiiiiiiiiiiii "+ id_poi);
+        if (id_poi != null) {
+            url += "&pointofinterestid=" + id_poi;
+        }
+
+
+        System.out.println("urliiiiii: " + url);
         String apiKey = "93489d58-e2cf-4e11-b3ac-74381fee38ac";
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
@@ -248,6 +257,8 @@ public class ListOfEvents extends AppCompatActivity implements OnLocationSelecte
                 return headers;
             }
         };
+
         RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonArrayRequest);
     }
+
 }

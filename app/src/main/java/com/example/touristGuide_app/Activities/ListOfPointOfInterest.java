@@ -48,6 +48,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
     private double selectedLatitude = 0, selectedLongitude = 0;
     private float selectedRadius = 0;
     private String selectedLocationName = null;
+    private String id_poi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,7 +186,7 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
         // Configura o RecyclerView e o adaptador após receber os POIs
         recyclerViewPoi = findViewById(R.id.recyclerViewPoi);
         recyclerViewPoi.setLayoutManager(new LinearLayoutManager(this));
-        adapterPoi = new PointOfInterestAdapter(pois, userIdReq, calendarIdReq);
+        adapterPoi = new PointOfInterestAdapter(pois, userIdReq, calendarIdReq, id_poi);
         recyclerViewPoi.setAdapter(adapterPoi);
         // Aqui você pode adicionar prints para verificar se os POIs foram recebidos corretamente
         Log.d("ListOfPointOfInterest", "POIs recebidos: " + pois.size());
@@ -242,7 +243,8 @@ public class ListOfPointOfInterest extends AppCompatActivity implements OnLocati
                         ArrayList<PointOfInterestDomain> pois = new ArrayList<>();
                         for (int i = 0; i < poiArray.length(); i++) {
                             JSONObject poiObject = poiArray.getJSONObject(i);
-                            String id_poi = poiObject.getString("_id");
+                            id_poi = poiObject.getString("_id");
+                            System.out.println("id_poie: "+id_poi);
                             String name = poiObject.getString("name");
                             String locationNameResponse = poiObject.getString("locationName");
                             JSONObject location = poiObject.getJSONObject("location");

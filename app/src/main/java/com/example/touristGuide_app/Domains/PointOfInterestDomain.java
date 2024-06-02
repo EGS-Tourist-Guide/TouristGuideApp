@@ -24,6 +24,7 @@ public class PointOfInterestDomain implements Serializable {
         this.description = description;
         this.category = category;
         this.thumbnail = thumbnail;
+
     }
     public String getId() {return id;}
     public void setId(String id) {this.id = id;}

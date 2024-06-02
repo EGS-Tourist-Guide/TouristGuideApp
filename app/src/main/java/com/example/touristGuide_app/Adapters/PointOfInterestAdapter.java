@@ -20,11 +20,12 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
     ArrayList<PointOfInterestDomain> items;
     private int userIdReq;
     private int calendarIdReq;
-
-    public PointOfInterestAdapter(ArrayList<PointOfInterestDomain> items, int userIdReq, int calendarIdReq) {
+    private String id_poi;
+    public PointOfInterestAdapter(ArrayList<PointOfInterestDomain> items, int userIdReq, int calendarIdReq, String id_poi) {
         this.items = items;
         this.userIdReq = userIdReq;
         this.calendarIdReq = calendarIdReq;
+        this.id_poi = id_poi;
     }
 
     @NonNull
@@ -64,6 +65,8 @@ public class PointOfInterestAdapter extends RecyclerView.Adapter<PointOfInterest
             Intent intent = new Intent(holder.itemView.getContext(), ListOfEvents.class);
             intent.putExtra("userIdReq", userIdReq);
             intent.putExtra("calendarIdReq", calendarIdReq);
+            intent.putExtra("poiId", item.getId());
+
 
             holder.itemView.getContext().startActivity(intent);
         });
